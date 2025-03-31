@@ -13,3 +13,6 @@ Android app for real-time messaging between devices using Bluetooth, requiring n
 - Framework: Android SDK
 - Communication: Bluetooth API
 
+## Rules
+Push to a new branch(`feat/name` or `fix/name`), open a Pull Request
+
