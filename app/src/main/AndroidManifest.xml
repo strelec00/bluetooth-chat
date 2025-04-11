@@ -15,7 +15,7 @@
         <activity
             android:name=".BluetoothDevicesActivity"
             android:exported="false"
-            android:label="@string/title_activity_bluetooth_devices"
+            android:label="@string/title_nearby_devices"
             android:theme="@style/App.Starting.Theme" />
         <activity
             android:name=".MainActivity"

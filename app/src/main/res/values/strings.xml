@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BluetoothChat</string>
     <string name="title_activity_bluetooth_devices">BluetoothDevicesActivity</string>
+    <string name="title_nearby_devices">Nearby Devices</string>
 </resources>
