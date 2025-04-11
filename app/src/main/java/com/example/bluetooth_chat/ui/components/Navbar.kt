@@ -6,6 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,6 +20,11 @@ fun Navbar(title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
+            .shadow(
+                elevation = 8.dp,
+                ambientColor = Color.Black,
+                spotColor = Color.Black
+            )
             .background(MaterialTheme.colorScheme.primary)
             .statusBarsPadding(),
         contentAlignment = Alignment.Center

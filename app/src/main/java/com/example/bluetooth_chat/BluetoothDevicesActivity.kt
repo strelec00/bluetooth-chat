@@ -4,15 +4,21 @@ import android.os.Bundle
 import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 import com.example.bluetooth_chat.ui.components.Navbar
+import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 
 class BluetoothDevicesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,20 +56,40 @@ fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier)
         else devices.filter { it.contains(searchQuery, ignoreCase = true) }
     }
 
+    val isDarkTheme = isSystemInDarkTheme()
+    val bluetoothIcon = if (isDarkTheme) R.drawable.bluetooth_icon_white else R.drawable.bluetooth_icon_black
+
+    // Custom text selection colors
+    val customTextSelectionColors = TextSelectionColors(
+        handleColor = MaterialTheme.colorScheme.onPrimary,
+        backgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
+    )
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Search devices") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            singleLine = true
-        )
+        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search for Bluetooth devices") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
 
         Text(
             text = "Available Devices",
@@ -73,12 +99,24 @@ fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier)
 
         LazyColumn {
             items(filteredDevices) { device ->
-                Text(
-                    text = device,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                )
+                ) {
+                    Image(
+                        painter = painterResource(id = bluetoothIcon),
+                        contentDescription = "Bluetooth Icon",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(end = 8.dp)
+                    )
+                    Text(
+                        text = device,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
