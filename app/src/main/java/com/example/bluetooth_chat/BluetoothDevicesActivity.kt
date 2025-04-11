@@ -7,9 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
@@ -25,7 +24,8 @@ class BluetoothDevicesActivity : ComponentActivity() {
                 val dummyDevices = listOf(
                     "Device A - 12:34:56:78:90",
                     "Device B - 98:76:54:32:10",
-                    "Device C - AA:BB:CC:DD:EE"
+                    "Device C - AA:BB:CC:DD:EE",
+                    "Device D - 01:23:45:67:89"
                 )
 
                 Scaffold(
@@ -41,24 +41,43 @@ class BluetoothDevicesActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier) {
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredDevices = remember(searchQuery, devices) {
+        if (searchQuery.isBlank()) devices
+        else devices.filter { it.contains(searchQuery, ignoreCase = true) }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search devices") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            singleLine = true
+        )
+
         Text(
             text = "Available Devices",
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
+            style = MaterialTheme.typography.titleMedium
         )
 
         LazyColumn {
-            items(devices) { device ->
+            items(filteredDevices) { device ->
                 Text(
                     text = device,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 )
             }
         }

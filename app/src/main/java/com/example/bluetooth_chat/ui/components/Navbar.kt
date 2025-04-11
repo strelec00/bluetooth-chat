@@ -18,7 +18,8 @@ fun Navbar(title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colorScheme.primary),
+            .background(MaterialTheme.colorScheme.primary)
+            .statusBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
         Row(
