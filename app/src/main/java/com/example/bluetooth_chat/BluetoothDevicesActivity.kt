@@ -11,20 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
-import com.example.bluetooth_chat.ui.theme.HomeScreen
 
-class MainActivity : ComponentActivity() {
+class BluetoothDevicesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
         enableEdgeToEdge()
         setContent {
             BluetoothchatTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        name = "BluetoothChat",
+                Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
+                    DevicesList(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -33,11 +29,18 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun DevicesList(modifier: Modifier = Modifier) {
+    Text(
+        text = "Available devices:",
+        modifier = modifier
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun GreetingPreview2() {
     BluetoothchatTheme {
-        HomeScreen("BluetoothChat")
+        DevicesList()
     }
 }
