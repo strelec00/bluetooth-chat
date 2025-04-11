@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="App.Starting.Theme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#D3D3D3</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
-        <item name="postSplashScreenTheme">@style/Theme.BluetoothChat</item>
-
-    </style>
-</resources>
