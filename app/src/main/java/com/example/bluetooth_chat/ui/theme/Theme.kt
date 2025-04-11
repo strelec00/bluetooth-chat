@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 fun BluetoothchatTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
