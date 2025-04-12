@@ -117,7 +117,7 @@ fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier)
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(64.dp)
-                        .clickable { /* Dummy click handler */ },
+                        .clickable {},
                     shape = MaterialTheme.shapes.medium,
                     tonalElevation = 2.dp,
                     color = MaterialTheme.colorScheme.surfaceVariant
