@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.theme
+package com.example.bluetooth_chat.ui.components
 
 import android.content.Intent
 import androidx.compose.foundation.layout.*
