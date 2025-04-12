@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:left="16dp" android:right="16dp" android:top="16dp" android:bottom="16dp">
-        <bitmap android:src="@drawable/bluetooth_white" android:gravity="center"/>
-    </item>
+    <item
+        android:bottom="24dp"
+        android:drawable="@drawable/bluetooth_icon_black"
+        android:left="24dp"
+        android:right="24dp"
+        android:top="24dp" />
 </layer-list>
