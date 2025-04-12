@@ -8,8 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(name: String, modifier: Modifier = Modifier) {
-
+fun ChatScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -17,7 +16,6 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "This is the $name home page!")
-        Spacer(modifier = Modifier.height(24.dp))
+        Text(text = "This is the ChatScreen")
     }
 }
