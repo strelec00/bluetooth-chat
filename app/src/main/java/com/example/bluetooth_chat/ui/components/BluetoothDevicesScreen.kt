@@ -52,7 +52,16 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
         }
 
