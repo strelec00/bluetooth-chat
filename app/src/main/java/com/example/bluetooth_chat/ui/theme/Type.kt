@@ -8,7 +8,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.bluetooth_chat.R
 
-// Create a FontFamily using the variable Manrope font
 val Manrope = FontFamily(
     Font(R.font.manrope_extralight, weight = FontWeight.ExtraLight),
     Font(R.font.manrope_light, weight = FontWeight.Light),
@@ -19,7 +18,6 @@ val Manrope = FontFamily(
     Font(R.font.manrope_extrabold, weight = FontWeight.ExtraBold)
 )
 
-// Define the typography using Manrope with variable weights
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = Manrope,

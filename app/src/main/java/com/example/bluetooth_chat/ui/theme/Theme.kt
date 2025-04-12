@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
         background = DarkGrey,
         primary = DarkGrey,
         secondary = LightGrey,
+        tertiary = DarkAshGrey,
         onPrimary = Color.White,
         onSecondary = EggshellGrey
     )
@@ -23,7 +24,8 @@ import androidx.compose.ui.platform.LocalContext
         background = Color.White,
         primary = Color.White,
         secondary = MediumGrey,
-        onPrimary = Color.Black,
+        tertiary = Color.White,
+        onPrimary = FieldMouseGrey,
         onSecondary = ElephantGrey
 
     /* Other default colors to override

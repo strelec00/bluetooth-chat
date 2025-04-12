@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.bluetooth_chat.ui.components.Navbar
+import com.example.bluetooth_chat.ui.components.BottomNavbar
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 import com.example.bluetooth_chat.ui.theme.HomeScreen
 
@@ -25,6 +26,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         Navbar(title = "BluetoothChat")
+                    },
+                    bottomBar = {
+                        BottomNavbar()
                     }
                 ) { innerPadding ->
                     HomeScreen(
@@ -41,6 +45,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     BluetoothchatTheme {
-        HomeScreen("BluetoothChat")
+        Scaffold(
+            topBar = { Navbar(title = "BluetoothChat") },
+            bottomBar = { BottomNavbar() }
+        ) {
+            HomeScreen(name = "BluetoothChat", modifier = Modifier.padding(it))
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.bluetooth_chat.ui.components.Navbar
+import com.example.bluetooth_chat.ui.components.BottomNavbar
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 
 class BluetoothDevicesActivity : ComponentActivity() {
@@ -28,14 +30,25 @@ class BluetoothDevicesActivity : ComponentActivity() {
         setContent {
             BluetoothchatTheme {
                 val dummyDevices = listOf(
-                    "Device A - 12:34:56:78:90",
-                    "Device B - 98:76:54:32:10",
-                    "Device C - AA:BB:CC:DD:EE",
-                    "Device D - 01:23:45:67:89"
+                    "Sam's iPhone",
+                    "Galaxy S10",
+                    "Emily's AirPods",
+                    "MacBook Pro",
+                    "Pixel 6a",
+                    "OnePlus Nord",
+                    "Ford SYNC",
+                    "Bose SoundLink",
+                    "Xbox Controller",
+                    "JBL Flip 5",
+                    "Anya’s iPad",
+                    "Tom’s Laptop",
+                    "Beats Studio",
+                    "Lenovo Tablet"
                 )
 
                 Scaffold(
-                    topBar = { Navbar(title = "Nearby Devices") }
+                    topBar = { Navbar(title = "Nearby Devices") },
+                    bottomBar = { BottomNavbar() }
                 ) { innerPadding ->
                     BluetoothDevicesScreen(
                         devices = dummyDevices,
@@ -59,7 +72,6 @@ fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier)
     val isDarkTheme = isSystemInDarkTheme()
     val bluetoothIcon = if (isDarkTheme) R.drawable.bluetooth_icon_white else R.drawable.bluetooth_icon_black
 
-    // Custom text selection colors
     val customTextSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.onPrimary,
         backgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
@@ -97,25 +109,38 @@ fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier)
             style = MaterialTheme.typography.titleMedium
         )
 
-        LazyColumn {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             items(filteredDevices) { device ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .height(64.dp)
+                        .clickable { /* Dummy click handler */ },
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 2.dp,
+                    color = MaterialTheme.colorScheme.surfaceVariant
                 ) {
-                    Image(
-                        painter = painterResource(id = bluetoothIcon),
-                        contentDescription = "Bluetooth Icon",
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .size(24.dp)
-                            .padding(end = 8.dp)
-                    )
-                    Text(
-                        text = device,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = bluetoothIcon),
+                            contentDescription = "Bluetooth Icon",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .padding(end = 12.dp)
+                        )
+                        Text(
+                            text = device,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
