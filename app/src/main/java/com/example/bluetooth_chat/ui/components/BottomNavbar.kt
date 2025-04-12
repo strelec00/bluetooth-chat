@@ -9,37 +9,44 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.bluetooth_chat.ui.navigation.Screen
 
 @Composable
-fun BottomNavbar() {
-    var selectedIndex by remember { mutableIntStateOf(0) }
-
+fun BottomNavbar(navController: NavController) {
     val items = listOf(
-        NavItem("Home", Icons.Default.Home),
-        NavItem("Chat", Icons.Default.MailOutline),
-        NavItem("Groups", Icons.Default.Face),
-        NavItem("Profile", Icons.Default.Person)
+        NavItem("Home", Icons.Default.Home, Screen.Home.route),
+        NavItem("Chat", Icons.Default.MailOutline, Screen.Chat.route),
+        NavItem("Groups", Icons.Default.Face, Screen.Groups.route),
+        NavItem("Add Device", Icons.Default.Create, Screen.BluetoothDevices.route)
     )
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar(
-        modifier = Modifier
-            .shadow(
-                8.dp,
-                ambientColor = Color.Black,
-                spotColor = Color.Black
-            ),
+        modifier = Modifier.shadow(8.dp, ambientColor = Color.Black, spotColor = Color.Black),
         tonalElevation = 0.dp,
         containerColor = MaterialTheme.colorScheme.tertiary
     ) {
-        items.forEachIndexed { index, item ->
+        items.forEach { item ->
             NavigationBarItem(
-                selected = selectedIndex == index,
-                onClick = { selectedIndex = index },
+                selected = currentRoute == item.route,
+                onClick = {
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
                 icon = {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.label,
-                        tint = if (selectedIndex == index)
+                        tint = if (currentRoute == item.route)
                             MaterialTheme.colorScheme.onPrimary
                         else
                             MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
@@ -48,7 +55,7 @@ fun BottomNavbar() {
                 label = {
                     Text(
                         text = item.label,
-                        color = if (selectedIndex == index)
+                        color = if (currentRoute == item.route)
                             MaterialTheme.colorScheme.onPrimary
                         else
                             MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
@@ -60,4 +67,8 @@ fun BottomNavbar() {
     }
 }
 
-data class NavItem(val label: String, val icon: ImageVector)
+data class NavItem(
+    val label: String,
+    val icon: ImageVector,
+    val route: String
+)

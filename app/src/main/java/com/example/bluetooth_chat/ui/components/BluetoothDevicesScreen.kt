@@ -1,9 +1,5 @@
-package com.example.bluetooth_chat
+package com.example.bluetooth_chat.ui.components
 
-import android.os.Bundle
-import android.view.Window
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,55 +14,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.bluetooth_chat.ui.components.Navbar
-import com.example.bluetooth_chat.ui.components.BottomNavbar
-import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
-
-class BluetoothDevicesActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            BluetoothchatTheme {
-                val dummyDevices = listOf(
-                    "Sam's iPhone",
-                    "Galaxy S10",
-                    "Emily's AirPods",
-                    "MacBook Pro",
-                    "Pixel 6a",
-                    "OnePlus Nord",
-                    "Ford SYNC",
-                    "Bose SoundLink",
-                    "Xbox Controller",
-                    "JBL Flip 5",
-                    "Anya’s iPad",
-                    "Tom’s Laptop",
-                    "Beats Studio",
-                    "Lenovo Tablet"
-                )
-
-                Scaffold(
-                    topBar = { Navbar(title = "Nearby Devices") },
-                    bottomBar = { BottomNavbar() }
-                ) { innerPadding ->
-                    BluetoothDevicesScreen(
-                        devices = dummyDevices,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
+import com.example.bluetooth_chat.R
 
 @Composable
-fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier) {
+fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredDevices = remember(searchQuery, devices) {
-        if (searchQuery.isBlank()) devices
-        else devices.filter { it.contains(searchQuery, ignoreCase = true) }
+    val dummyDevices = listOf(
+        "Sam's iPhone", "Galaxy S10", "Emily's AirPods", "MacBook Pro", "Pixel 6a", "OnePlus Nord",
+        "Ford SYNC", "Bose SoundLink", "Xbox Controller", "JBL Flip 5", "Anya’s iPad",
+        "Tom’s Laptop", "Beats Studio", "Lenovo Tablet"
+    )
+
+    val filteredDevices = remember(searchQuery) {
+        if (searchQuery.isBlank()) dummyDevices
+        else dummyDevices.filter { it.contains(searchQuery, ignoreCase = true) }
     }
 
     val isDarkTheme = isSystemInDarkTheme()
@@ -117,7 +79,7 @@ fun BluetoothDevicesScreen(devices: List<String>, modifier: Modifier = Modifier)
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(64.dp)
-                        .clickable {},
+                        .clickable { /* handle click */ },
                     shape = MaterialTheme.shapes.medium,
                     tonalElevation = 2.dp,
                     color = MaterialTheme.colorScheme.surfaceVariant

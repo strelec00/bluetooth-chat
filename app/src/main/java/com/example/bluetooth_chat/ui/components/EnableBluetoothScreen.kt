@@ -17,51 +17,45 @@ import com.example.bluetooth_chat.ui.theme.Typography
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
-fun EnableBluetoothScreen() {
+fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    Scaffold(
-        topBar = { Navbar(title = "BluetoothChat") },
-        bottomBar = { BottomNavbar() }
+    Box(
+        modifier = modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "Bluetooth is turned off",
-                    style = TextStyle(
-                        fontFamily = Typography.bodyLarge.fontFamily,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 22.sp
-                    )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Bluetooth is turned off",
+                style = TextStyle(
+                    fontFamily = Typography.bodyLarge.fontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 22.sp
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Enable Bluetooth to start connecting with nearby devices for chat.",
-                    style = TextStyle(
-                        fontFamily = Typography.bodyLarge.fontFamily,
-                        fontWeight = FontWeight.Light,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Enable Bluetooth to start connecting with nearby devices for chat.",
+                style = TextStyle(
+                    fontFamily = Typography.bodyLarge.fontFamily,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = Color.White
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(text = "Enable Bluetooth")
-                }
+            ) {
+                Text(text = "Enable Bluetooth")
             }
         }
     }

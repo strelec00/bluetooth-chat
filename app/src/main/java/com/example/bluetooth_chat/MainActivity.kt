@@ -8,19 +8,18 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.bluetooth_chat.ui.components.BottomNavbar
-import com.example.bluetooth_chat.ui.components.Navbar
-import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
-import com.example.bluetooth_chat.ui.components.HomeScreen
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import com.example.bluetooth_chat.ui.components.EnableBluetoothScreen
+import androidx.navigation.compose.*
 import com.example.bluetooth_chat.bluetooth.BluetoothChecker
+import com.example.bluetooth_chat.ui.components.*
+import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
+import com.example.bluetooth_chat.ui.navigation.Screen
 
 class MainActivity : ComponentActivity() {
 
@@ -44,22 +43,61 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val navController = rememberNavController()
+
             BluetoothchatTheme {
                 BluetoothChecker(
                     contentWhenOn = {
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
                             topBar = { Navbar(title = "BluetoothChat") },
-                            bottomBar = { BottomNavbar() }
+                            bottomBar = { BottomNavbar(navController = navController) }
                         ) { innerPadding ->
-                            HomeScreen(
-                                name = "BluetoothChat",
+                            NavHost(
+                                navController = navController,
+                                startDestination = Screen.Home.route,
                                 modifier = Modifier.padding(innerPadding)
-                            )
+                            ) {
+                                composable(Screen.Home.route) {
+                                    HomeScreen(name = "BluetoothChat")
+                                }
+                                composable(Screen.Chat.route) {
+                                    ChatScreen()
+                                }
+                                composable(Screen.Groups.route) {
+                                    GroupsScreen()
+                                }
+                                composable(Screen.BluetoothDevices.route) {
+                                    BluetoothDevicesScreen()
+                                }
+                            }
                         }
                     },
                     contentWhenOff = {
-                        EnableBluetoothScreen()
+                        Scaffold(
+                            modifier = Modifier.fillMaxSize(),
+                            topBar = { Navbar(title = "BluetoothChat") },
+                            bottomBar = { BottomNavbar(navController = navController) }
+                        ) { innerPadding ->
+                            NavHost(
+                                navController = navController,
+                                startDestination = Screen.Home.route,
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                composable(Screen.Home.route) {
+                                    EnableBluetoothScreen()
+                                }
+                                composable(Screen.Chat.route) {
+                                    ChatScreen()
+                                }
+                                composable(Screen.Groups.route) {
+                                    GroupsScreen()
+                                }
+                                composable(Screen.BluetoothDevices.route) {
+                                    EnableBluetoothScreen()
+                                }
+                            }
+                        }
                     }
                 )
             }
