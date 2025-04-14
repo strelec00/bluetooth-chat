@@ -5,4 +5,5 @@ sealed class Screen(val route: String) {
     data object Chat : Screen("chat")
     data object Groups : Screen("groups")
     data object BluetoothDevices : Screen("bluetooth_devices")
+    data object Profile : Screen("profile")
 }

@@ -44,14 +44,34 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
+            val currentDestination = navController
+                .currentBackStackEntryAsState().value?.destination
+
+            val showBars = when (currentDestination?.route) {
+                Screen.Home.route,
+                Screen.Chat.route,
+                Screen.Groups.route,
+                Screen.BluetoothDevices.route -> true
+                else -> false
+            }
 
             BluetoothchatTheme {
                 BluetoothChecker(
                     contentWhenOn = {
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
-                            topBar = { Navbar(title = "BluetoothChat") },
-                            bottomBar = { BottomNavbar(navController = navController) }
+                            topBar = {
+                                if (showBars) {
+                                    Navbar(title = "BluetoothChat") {
+                                        navController.navigate(Screen.Profile.route)
+                                    }
+                                }
+                            },
+                            bottomBar = {
+                                if (showBars) {
+                                    BottomNavbar(navController)
+                                }
+                            }
                         ) { innerPadding ->
                             NavHost(
                                 navController = navController,
@@ -70,14 +90,29 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.BluetoothDevices.route) {
                                     BluetoothDevicesScreen()
                                 }
+                                composable(Screen.Profile.route) {
+                                    ProfileScreen(
+                                        onBack = { navController.popBackStack() }
+                                    )
+                                }
                             }
                         }
                     },
+
                     contentWhenOff = {
+                        // Možeš isto refaktorirati kao gore ako želiš.
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
-                            topBar = { Navbar(title = "BluetoothChat") },
-                            bottomBar = { BottomNavbar(navController = navController) }
+                            topBar = {
+                                if (true) {
+                                    Navbar(title = "BluetoothChat") {
+                                        navController.navigate(Screen.Profile.route)
+                                    }
+                                }
+                            },
+                            bottomBar = {
+                                BottomNavbar(navController)
+                            }
                         ) { innerPadding ->
                             NavHost(
                                 navController = navController,
@@ -95,6 +130,11 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable(Screen.BluetoothDevices.route) {
                                     EnableBluetoothScreen()
+                                }
+                                composable(Screen.Profile.route) {
+                                    ProfileScreen(
+                                        onBack = { navController.popBackStack() }
+                                    )
                                 }
                             }
                         }

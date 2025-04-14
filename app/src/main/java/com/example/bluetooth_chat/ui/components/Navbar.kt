@@ -11,11 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.bluetooth_chat.R
 
 @Composable
-fun Navbar(title: String) {
+fun Navbar(title: String, function: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,7 +34,7 @@ fun Navbar(title: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { /* TODO: Implement profile screen */ },
+                onClick = function, // <- Ovdje je promjena
                 modifier = Modifier.padding(start = 16.dp)
             ) {
                 Icon(
@@ -61,10 +60,4 @@ fun Navbar(title: String) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewNavbar() {
-    Navbar(title = "Home")
 }
