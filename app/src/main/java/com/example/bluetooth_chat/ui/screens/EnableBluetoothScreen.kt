@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.components
+package com.example.bluetooth_chat.ui.screens
 
 import android.content.Intent
 import android.provider.Settings

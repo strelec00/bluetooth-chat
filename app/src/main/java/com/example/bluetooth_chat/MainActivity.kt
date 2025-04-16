@@ -21,6 +21,12 @@ import androidx.navigation.compose.*
 import com.example.bluetooth_chat.bluetooth.BluetoothChecker
 import com.example.bluetooth_chat.ui.components.*
 import com.example.bluetooth_chat.ui.navigation.Screen
+import com.example.bluetooth_chat.ui.screens.BluetoothDevicesScreen
+import com.example.bluetooth_chat.ui.screens.ChatScreen
+import com.example.bluetooth_chat.ui.screens.EnableBluetoothScreen
+import com.example.bluetooth_chat.ui.screens.GroupsScreen
+import com.example.bluetooth_chat.ui.screens.HomeScreen
+import com.example.bluetooth_chat.ui.screens.ProfileScreen
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 
 class MainActivity : ComponentActivity() {

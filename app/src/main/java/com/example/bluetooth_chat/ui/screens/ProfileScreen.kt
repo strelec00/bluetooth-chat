@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.components
+package com.example.bluetooth_chat.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.bluetooth_chat.ui.components.NavbarBack
 
 @Composable
 fun ProfileScreen(onBack: () -> Unit) {

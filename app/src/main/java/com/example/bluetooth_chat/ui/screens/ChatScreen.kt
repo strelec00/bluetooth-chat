@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.components
+package com.example.bluetooth_chat.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
