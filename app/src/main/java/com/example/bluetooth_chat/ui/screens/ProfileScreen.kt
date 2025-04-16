@@ -13,19 +13,22 @@ import com.example.bluetooth_chat.ui.components.NavbarBack
 
 @Composable
 fun ProfileScreen(onBack: () -> Unit) {
+    // Scaffold provides a basic layout structure with a top bar
     Scaffold(
         topBar = {
+            // Custom NavbarBack component for the top bar, with a back button
             NavbarBack(title = "Profile", onBack = onBack)
         }
     ) { innerPadding ->
+        // Content area of the screen
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+                .fillMaxSize() // Takes up the full screen size
+                .padding(innerPadding) // Applies padding from the Scaffold
+                .padding(16.dp) // Adds extra padding around the content
         ) {
+            // Text displaying a welcome message on the profile screen
             Text("Welcome to your profile!", style = MaterialTheme.typography.headlineMedium)
         }
     }
 }
-

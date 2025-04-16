@@ -16,6 +16,7 @@ import com.example.bluetooth_chat.ui.navigation.Screen
 
 @Composable
 fun BottomNavbar(navController: NavController) {
+    // List of navigation items in the bottom bar
     val items = listOf(
         NavItem("Home", Icons.Default.Home, Screen.Home.route),
         NavItem("Chat", Icons.Default.MailOutline, Screen.Chat.route),
@@ -23,19 +24,25 @@ fun BottomNavbar(navController: NavController) {
         NavItem("Add Device", Icons.Default.Create, Screen.BluetoothDevices.route)
     )
 
+    // Observes current navigation route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        modifier = Modifier.shadow(8.dp, ambientColor = Color.Black, spotColor = Color.Black),
+        modifier = Modifier.shadow(
+            8.dp,
+            ambientColor = Color.Black,
+            spotColor = Color.Black
+        ), // Adds shadow for elevation
         tonalElevation = 0.dp,
-        containerColor = MaterialTheme.colorScheme.tertiary
+        containerColor = MaterialTheme.colorScheme.tertiary // Uses theme color for background
     ) {
         items.forEach { item ->
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = currentRoute == item.route, // Highlights selected item
                 onClick = {
                     if (currentRoute != item.route) {
+                        // Navigate to selected screen with state restoration
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
@@ -46,11 +53,11 @@ fun BottomNavbar(navController: NavController) {
                 icon = {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.label,
+                        contentDescription = item.label, // Important for accessibility
                         tint = if (currentRoute == item.route)
                             MaterialTheme.colorScheme.onPrimary
                         else
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f) // Faded tint for unselected icons
                     )
                 },
                 label = {
@@ -59,7 +66,7 @@ fun BottomNavbar(navController: NavController) {
                         color = if (currentRoute == item.route)
                             MaterialTheme.colorScheme.onPrimary
                         else
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f) // Faded label for unselected
                     )
                 },
                 alwaysShowLabel = true
@@ -68,6 +75,7 @@ fun BottomNavbar(navController: NavController) {
     }
 }
 
+// Simple data class representing a bottom nav item
 data class NavItem(
     val label: String,
     val icon: ImageVector,

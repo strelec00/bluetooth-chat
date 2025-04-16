@@ -31,42 +31,45 @@ fun NavbarBack(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
+            .fillMaxWidth() // Full width navbar
+            .height(56.dp) // Standard navbar height
             .shadow(
-                elevation = 8.dp,
+                elevation = 8.dp, // Adds elevation effect
                 ambientColor = Color.Black,
                 spotColor = Color.Black
             )
-            .background(MaterialTheme.colorScheme.primary),
+            .background(MaterialTheme.colorScheme.primary), // Primary background color
         contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp), // Horizontal padding for content spacing
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // Back button
             IconButton(onClick = onBack) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = "Back", // Important for accessibility
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
+            // Title text
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimary
             )
 
+            // Invisible icon for layout symmetry
             IconButton(onClick = {}, enabled = false) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
-                    tint = Color.Transparent
+                    tint = Color.Transparent // Keeps layout balanced
                 )
             }
         }

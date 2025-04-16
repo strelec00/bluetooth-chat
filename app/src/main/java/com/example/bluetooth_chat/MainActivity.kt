@@ -31,13 +31,15 @@ import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 
 class MainActivity : ComponentActivity() {
 
+    // Launcher for requesting a single permission (Bluetooth)
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
-        enableEdgeToEdge()
+        installSplashScreen() // Show splash screen
+        enableEdgeToEdge() // Use full screen layout
 
+        // Register the permission request callback
         requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
@@ -46,6 +48,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Request permission if not already granted
         if (!hasBluetoothConnectPermission()) {
             requestBluetoothPermissionIfNeeded()
         }
@@ -54,7 +57,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val currentDestination by navController.currentBackStackEntryAsState()
 
-            // Ekrani koji trebaju prikazivati navbarove
+            // Determine if the current screen should show the top/bottom bars
             val showBars = when (currentDestination?.destination?.route) {
                 Screen.Home.route,
                 Screen.Chat.route,
@@ -68,6 +71,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
+                        // Show top bar only for selected screens
                         if (showBars) {
                             Navbar(title = "BluetoothChat") {
                                 navController.navigate(Screen.Profile.route)
@@ -75,6 +79,7 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     bottomBar = {
+                        // Show bottom bar only for selected screens
                         if (showBars) {
                             BottomNavbar(navController = navController)
                         }
@@ -82,6 +87,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     BluetoothChecker(
                         contentWhenOn = {
+                            // Navigation graph when Bluetooth is ON
                             NavHost(
                                 navController = navController,
                                 startDestination = Screen.Home.route,
@@ -107,6 +113,7 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         contentWhenOff = {
+                            // Navigation graph when Bluetooth is OFF
                             NavHost(
                                 navController = navController,
                                 startDestination = Screen.Home.route,
@@ -137,6 +144,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Checks if BLUETOOTH_CONNECT permission is granted (only for Android 12+)
     private fun hasBluetoothConnectPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ContextCompat.checkSelfPermission(
@@ -144,10 +152,11 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.BLUETOOTH_CONNECT
             ) == PackageManager.PERMISSION_GRANTED
         } else {
-            true
+            true // Permission not required on older versions
         }
     }
 
+    // Requests Bluetooth permission if needed (only for Android 12+)
     private fun requestBluetoothPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)

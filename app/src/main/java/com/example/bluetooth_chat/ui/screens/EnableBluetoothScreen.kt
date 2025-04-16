@@ -18,14 +18,15 @@ import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+    val context = LocalContext.current // Get the current context
 
     Box(
         modifier = modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+            .fillMaxSize(), // Fill the available screen size
+        contentAlignment = Alignment.Center // Center content within the box
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // Title text
             Text(
                 text = "Bluetooth is turned off",
                 style = TextStyle(
@@ -34,23 +35,27 @@ fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
                     fontSize = 22.sp
                 )
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp)) // Spacing between texts
+
+            // Description text
             Text(
                 text = "Enable Bluetooth to start connecting with nearby devices for chat.",
                 style = TextStyle(
                     fontFamily = Typography.bodyLarge.fontFamily,
                     fontWeight = FontWeight.Light,
                     fontSize = 16.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center // Center-align the text
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp)) // Spacing before button
+
+            // Button to open Bluetooth settings
             Button(
                 onClick = {
-                    context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                    context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) // Launch system Bluetooth settings
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,

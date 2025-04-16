@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Custom splash screen light theme -->
     <style name="App.Starting.Theme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FF181A1C</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/bluetooth_black_padding</item>

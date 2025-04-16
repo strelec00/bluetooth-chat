@@ -9,13 +9,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun GroupsScreen(modifier: Modifier = Modifier) {
+    // Column used for vertical layout of components
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize() // Takes up the full screen size
+            .padding(32.dp), // Adds padding around the content
+        verticalArrangement = Arrangement.Center, // Centers content vertically
+        horizontalAlignment = Alignment.CenterHorizontally // Centers content horizontally
     ) {
+        // Text displaying a simple message for the Groups screen
         Text(text = "This is the GroupsScreen")
     }
 }

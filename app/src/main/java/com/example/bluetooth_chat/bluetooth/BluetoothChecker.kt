@@ -19,19 +19,26 @@ fun BluetoothChecker(
     contentWhenOff: @Composable () -> Unit
 ) {
     val context = LocalContext.current
+
+    // Get BluetoothAdapter from system service
     val bluetoothAdapter = remember {
-        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+        val bluetoothManager =
+            context.getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
         bluetoothManager.adapter
     }
+
+    // Track current Bluetooth state
     var isBluetoothOn by remember {
         mutableStateOf(bluetoothAdapter?.isEnabled == true)
     }
 
+    // Register receiver to listen for Bluetooth state changes
     DisposableEffect(Unit) {
         val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                val state = intent?.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+                val state =
+                    intent?.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
                 isBluetoothOn = state == BluetoothAdapter.STATE_ON
             }
         }
