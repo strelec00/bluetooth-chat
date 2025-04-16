@@ -10,16 +10,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.*
 import com.example.bluetooth_chat.bluetooth.BluetoothChecker
 import com.example.bluetooth_chat.ui.components.*
-import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 import com.example.bluetooth_chat.ui.navigation.Screen
+import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -44,35 +46,36 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            val currentDestination = navController
-                .currentBackStackEntryAsState().value?.destination
+            val currentDestination by navController.currentBackStackEntryAsState()
 
-            val showBars = when (currentDestination?.route) {
+            // Ekrani koji trebaju prikazivati navbarove
+            val showBars = when (currentDestination?.destination?.route) {
                 Screen.Home.route,
                 Screen.Chat.route,
                 Screen.Groups.route,
                 Screen.BluetoothDevices.route -> true
+
                 else -> false
             }
 
             BluetoothchatTheme {
-                BluetoothChecker(
-                    contentWhenOn = {
-                        Scaffold(
-                            modifier = Modifier.fillMaxSize(),
-                            topBar = {
-                                if (showBars) {
-                                    Navbar(title = "BluetoothChat") {
-                                        navController.navigate(Screen.Profile.route)
-                                    }
-                                }
-                            },
-                            bottomBar = {
-                                if (showBars) {
-                                    BottomNavbar(navController)
-                                }
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        if (showBars) {
+                            Navbar(title = "BluetoothChat") {
+                                navController.navigate(Screen.Profile.route)
                             }
-                        ) { innerPadding ->
+                        }
+                    },
+                    bottomBar = {
+                        if (showBars) {
+                            BottomNavbar(navController = navController)
+                        }
+                    }
+                ) { innerPadding ->
+                    BluetoothChecker(
+                        contentWhenOn = {
                             NavHost(
                                 navController = navController,
                                 startDestination = Screen.Home.route,
@@ -96,24 +99,8 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-                        }
-                    },
-
-                    contentWhenOff = {
-                        // Možeš isto refaktorirati kao gore ako želiš.
-                        Scaffold(
-                            modifier = Modifier.fillMaxSize(),
-                            topBar = {
-                                if (true) {
-                                    Navbar(title = "BluetoothChat") {
-                                        navController.navigate(Screen.Profile.route)
-                                    }
-                                }
-                            },
-                            bottomBar = {
-                                BottomNavbar(navController)
-                            }
-                        ) { innerPadding ->
+                        },
+                        contentWhenOff = {
                             NavHost(
                                 navController = navController,
                                 startDestination = Screen.Home.route,
@@ -138,8 +125,8 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }

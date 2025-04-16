@@ -43,7 +43,9 @@ fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
