@@ -17,16 +17,17 @@ import com.example.bluetooth_chat.ui.theme.Typography
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
+
+// Screen that pop up when Bluetooth isn't turned on
 fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
-    val context = LocalContext.current // Get the current context
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
-            .fillMaxSize(), // Fill the available screen size
-        contentAlignment = Alignment.Center // Center content within the box
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Title text
             Text(
                 text = "Bluetooth is turned off",
                 style = TextStyle(
@@ -44,7 +45,7 @@ fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
                     fontFamily = Typography.bodyLarge.fontFamily,
                     fontWeight = FontWeight.Light,
                     fontSize = 16.sp,
-                    textAlign = TextAlign.Center // Center-align the text
+                    textAlign = TextAlign.Center
                 ),
                 modifier = Modifier
                     .fillMaxWidth()

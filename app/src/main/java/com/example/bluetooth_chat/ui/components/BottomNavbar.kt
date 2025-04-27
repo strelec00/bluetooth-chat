@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.bluetooth_chat.ui.navigation.Screen
 
+// BOTTOM Navbar component
 @Composable
 fun BottomNavbar(navController: NavController) {
     // List of navigation items in the bottom bar

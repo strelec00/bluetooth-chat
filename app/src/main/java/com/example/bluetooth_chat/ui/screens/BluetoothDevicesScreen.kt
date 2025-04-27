@@ -31,6 +31,8 @@ import androidx.core.content.ContextCompat
 import com.example.bluetooth_chat.R
 
 @Composable
+
+// List of devices in vicinity
 fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 

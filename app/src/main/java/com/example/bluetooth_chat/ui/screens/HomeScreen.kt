@@ -8,19 +8,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
+
+// Screen for Home tab
 fun HomeScreen(name: String, modifier: Modifier = Modifier) {
-    // Column used for vertical layout of components
     Column(
         modifier = modifier
-            .fillMaxSize() // Takes up the full screen size
-            .padding(32.dp), // Adds padding around the content
-        verticalArrangement = Arrangement.Center, // Centers content vertically
-        horizontalAlignment = Alignment.CenterHorizontally // Centers content horizontally
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Text displaying a message with the passed 'name' value
         Text(text = "This is the $name home page!")
 
-        // Spacer to add space between the text and any subsequent content
         Spacer(modifier = Modifier.height(24.dp))
     }
 }

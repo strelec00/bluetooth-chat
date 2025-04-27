@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 
 data class User(val name: String, val profilePicRes: Int)
 
+// Screen to list users message history
 @Composable
 fun ChatScreen(modifier: Modifier = Modifier) {
     var searchQuery by remember { mutableStateOf("") } // Holds the current search query

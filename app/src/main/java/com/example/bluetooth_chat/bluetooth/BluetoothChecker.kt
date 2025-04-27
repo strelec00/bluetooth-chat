@@ -13,6 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
+// Returns different functions depending if Bluetooth is enabled or disabled
+// Used for different content visibility
 @Composable
 fun BluetoothChecker(
     contentWhenOn: @Composable () -> Unit,
