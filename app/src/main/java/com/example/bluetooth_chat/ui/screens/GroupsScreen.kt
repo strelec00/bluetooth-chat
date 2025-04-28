@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.components
+package com.example.bluetooth_chat.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
+
+// Screen for Groups tab
 fun GroupsScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier

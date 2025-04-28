@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.components
+package com.example.bluetooth_chat.ui.screens
 
 import android.content.Intent
 import android.provider.Settings
@@ -17,6 +17,8 @@ import com.example.bluetooth_chat.ui.theme.Typography
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
+
+// Screen that pop up when Bluetooth isn't turned on
 fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
@@ -34,7 +36,9 @@ fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
                     fontSize = 22.sp
                 )
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp)) // Spacing between texts
+
+            // Description text
             Text(
                 text = "Enable Bluetooth to start connecting with nearby devices for chat.",
                 style = TextStyle(
@@ -43,12 +47,16 @@ fun EnableBluetoothScreen(modifier: Modifier = Modifier) {
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp)) // Spacing before button
+
+            // Button to open Bluetooth settings
             Button(
                 onClick = {
-                    context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                    context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) // Launch system Bluetooth settings
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,

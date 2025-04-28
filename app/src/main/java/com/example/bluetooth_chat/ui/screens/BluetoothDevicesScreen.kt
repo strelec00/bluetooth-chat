@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.ui.components
+package com.example.bluetooth_chat.ui.screens
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,14 +31,22 @@ import androidx.core.content.ContextCompat
 import com.example.bluetooth_chat.R
 
 @Composable
+
+// List of devices in vicinity
 fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+
+    // Get Bluetooth adapter
     val bluetoothAdapter = remember {
         (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
     }
 
     var searchQuery by remember { mutableStateOf("") }
+
+    // List of discovered devices
     val devices = remember { mutableStateListOf<BluetoothDevice>() }
+
+    // Filtered list based on user search input
     val filteredDevices = remember(searchQuery, devices) {
         if (searchQuery.isBlank()) devices
         else devices.filter {
@@ -46,24 +55,41 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    // Select icon based on dark/light theme
     val isDarkTheme = isSystemInDarkTheme()
-    val bluetoothIcon = if (isDarkTheme) R.drawable.bluetooth_icon_white else R.drawable.bluetooth_icon_black
+    val bluetoothIcon =
+        if (isDarkTheme) R.drawable.bluetooth_icon_white else R.drawable.bluetooth_icon_black
 
+    // Customize text selection colors
     val customTextSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.onPrimary,
         backgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
     )
 
+    // Check all needed Bluetooth permissions
     fun hasBluetoothPermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
         } else {
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         }
     }
 
+    // Permission launcher for requesting multiple permissions
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -75,6 +101,7 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    // Request permissions on first composition
     LaunchedEffect(Unit) {
         if (!hasBluetoothPermissions()) {
             val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -86,22 +113,27 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
             } else {
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
             }
-
             permissionLauncher.launch(requiredPermissions)
         }
     }
 
+    // Broadcast receiver to catch found Bluetooth devices
     val receiver = rememberUpdatedState(
         object : BroadcastReceiver() {
             override fun onReceive(c: Context?, intent: Intent?) {
                 if (BluetoothDevice.ACTION_FOUND == intent?.action) {
-                    val device: BluetoothDevice? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    }
+                    val device: BluetoothDevice? =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            intent.getParcelableExtra(
+                                BluetoothDevice.EXTRA_DEVICE,
+                                BluetoothDevice::class.java
+                            )
+                        } else {
+                            @Suppress("DEPRECATION")
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                        }
 
+                    // Add device if not already in list
                     if (device != null &&
                         ContextCompat.checkSelfPermission(
                             context,
@@ -121,6 +153,7 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
         }
     )
 
+    // Start Bluetooth discovery
     fun startDiscovery() {
         if (hasBluetoothPermissions()) {
             val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
@@ -140,9 +173,9 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    // Cleanup receiver and cancel discovery when composable is disposed
     DisposableEffect(Unit) {
         startDiscovery()
-
         onDispose {
             try {
                 context.unregisterReceiver(receiver.value)
@@ -152,11 +185,13 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    // UI Content
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Search field with custom selection colors
         CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
             OutlinedTextField(
                 value = searchQuery,
@@ -178,10 +213,9 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
             )
         }
 
+        // Button to start scanning manually
         Button(
-            onClick = {
-                startDiscovery()
-            },
+            onClick = { startDiscovery() },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = Color.White
@@ -193,12 +227,14 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
             Text("Scan for Devices")
         }
 
+        // Section title
         Text(
             text = "Available Devices",
             modifier = Modifier.padding(bottom = 16.dp),
             style = MaterialTheme.typography.titleMedium
         )
 
+        // List of Bluetooth devices
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -208,6 +244,7 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .height(64.dp)
                         .clickable {
+                            // Open Bluetooth settings when device item is clicked
                             val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
                             context.startActivity(intent)
                         },
@@ -221,6 +258,7 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     ) {
+                        // Bluetooth icon
                         Image(
                             painter = painterResource(id = bluetoothIcon),
                             contentDescription = "Bluetooth Icon",
@@ -228,6 +266,8 @@ fun BluetoothDevicesScreen(modifier: Modifier = Modifier) {
                                 .size(28.dp)
                                 .padding(end = 12.dp)
                         )
+
+                        // Device name or address
                         Text(
                             text = device.name ?: device.address ?: "Unknown Device",
                             style = MaterialTheme.typography.titleMedium,

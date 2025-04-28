@@ -11,16 +11,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.bluetooth_chat.R
 
+// TOP Navbar component
 @Composable
-fun Navbar(title: String) {
+fun Navbar(title: String, function: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .shadow(
+            .shadow( // Add shadow below navbar
                 elevation = 8.dp,
                 ambientColor = Color.Black,
                 spotColor = Color.Black
@@ -34,8 +34,9 @@ fun Navbar(title: String) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Profile icon *button on the left*
             IconButton(
-                onClick = { /* TODO: Implement profile screen */ },
+                onClick = function,
                 modifier = Modifier.padding(start = 16.dp)
             ) {
                 Icon(
@@ -44,11 +45,14 @@ fun Navbar(title: String) {
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
+
             Text(
                 text = title,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 24.sp
             )
+
+            // Settings icon *button on the right*
             IconButton(
                 onClick = { /* TODO: Implement settings screen */ },
                 modifier = Modifier.padding(end = 16.dp)
@@ -61,10 +65,4 @@ fun Navbar(title: String) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewNavbar() {
-    Navbar(title = "Home")
 }
