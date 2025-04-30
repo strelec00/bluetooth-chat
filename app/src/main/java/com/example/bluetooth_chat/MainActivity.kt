@@ -46,31 +46,33 @@ class MainActivity : ComponentActivity() {
             requestBluetoothPermissionIfNeeded()
         }
 
+        AppPreferences.resetFirstLaunch(applicationContext)
+
         setContent {
             val context = applicationContext
             var showInfoScreen by remember { mutableStateOf(AppPreferences.isFirstLaunch(context)) }
 
-            if (showInfoScreen) {
-                InfoScreen(
-                    onFinish = {
-                        AppPreferences.setFirstLaunchComplete(context)
-                        showInfoScreen = false
+            BluetoothchatTheme {
+                if (showInfoScreen) {
+                    InfoScreen(
+                        onFinish = {
+                            AppPreferences.setFirstLaunchComplete(context)
+                            showInfoScreen = false
+                        }
+                    )
+                } else {
+                    val navController = rememberNavController()
+                    val currentDestination by navController.currentBackStackEntryAsState()
+
+                    val showBars = when (currentDestination?.destination?.route) {
+                        Screen.Home.route,
+                        Screen.Chat.route,
+                        Screen.Groups.route,
+                        Screen.BluetoothDevices.route -> true
+
+                        else -> false
                     }
-                )
-            } else {
-                val navController = rememberNavController()
-                val currentDestination by navController.currentBackStackEntryAsState()
 
-                val showBars = when (currentDestination?.destination?.route) {
-                    Screen.Home.route,
-                    Screen.Chat.route,
-                    Screen.Groups.route,
-                    Screen.BluetoothDevices.route -> true
-
-                    else -> false
-                }
-
-                BluetoothchatTheme {
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         topBar = {

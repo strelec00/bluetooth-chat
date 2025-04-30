@@ -1,186 +1,244 @@
-// 1. First, create the information screen UI
 package com.example.bluetooth_chat.ui.screens
 
+import android.R.style.Theme
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bluetooth_chat.R
+import com.example.bluetooth_chat.ui.data.InfoPage
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun InfoScreen(
     onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var currentPage by remember { mutableStateOf(0) }
-    val pages = listOf(
-        InfoPage(
-            title = "Welcome to Bluetooth Chat",
-            description = "Connect and chat with nearby devices using Bluetooth technology",
-            icon = Icons.Default.Warning
-        ),
-        InfoPage(
-            title = "Search & Connect",
-            description = "Discover nearby devices and connect with a simple tap",
-            icon = Icons.Default.Warning
-        ),
-        InfoPage(
-            title = "Secure Messaging",
-            description = "Exchange messages securely with your connected devices",
-            icon = Icons.Default.Warning
-        )
-    )
+    val colorScheme = MaterialTheme.colorScheme
+    val pagerState = rememberPagerState(pageCount = { pages.size })
+    val coroutineScope = rememberCoroutineScope()
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Content takes most of the space
-        Box(
+        // Decorative wave (optional, transparent overlay)
+        Image(
+            painter = painterResource(id = R.drawable.wave2),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            // Display current info page with animation
-            androidx.compose.animation.AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(600)) +
-                        slideInVertically(animationSpec = tween(600)) { it / 2 }
-            ) {
-                InfoPageContent(page = pages[currentPage])
-            }
-        }
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .alpha(0.15f)
+        )
 
-        // Bottom navigation and indicators
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
         ) {
+            // App Title & Skip
+            Box(
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 8.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "BlueChat",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = colorScheme.onPrimary
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+
+                Text(
+                    text = "Skip",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = colorScheme.onPrimary.copy(alpha = 0.8f)
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .clickable { onFinish() }
+                )
+            }
+
+            // Pager
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) { page ->
+                OnboardingPage(page = pages[page])
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Page indicators
             Row(
-                modifier = Modifier
-                    .padding(bottom = 32.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                pages.forEachIndexed { index, _ ->
+                repeat(pages.size) { index ->
+                    val width = animateDpAsState(
+                        targetValue = if (pagerState.currentPage == index) 24.dp else 8.dp,
+                        animationSpec = tween(300, easing = FastOutSlowInEasing),
+                        label = "pager_indicator_width"
+                    )
+
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
-                            .size(if (currentPage == index) 10.dp else 8.dp)
+                            .height(8.dp)
+                            .width(width.value)
                             .clip(CircleShape)
                             .background(
-                                if (currentPage == index)
-                                    MaterialTheme.colorScheme.primary
+                                if (pagerState.currentPage == index)
+                                    colorScheme.onPrimary
                                 else
-                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    colorScheme.onPrimary.copy(alpha = 0.5f)
                             )
                     )
                 }
             }
 
-            // Navigation buttons
-            Row(
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Button
+            Button(
+                onClick = {
+                    if (pagerState.currentPage < pages.lastIndex) {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
+                    } else {
+                        onFinish()
+                    }
+                },
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorScheme.onPrimary,
+                    contentColor = colorScheme.primary
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .height(56.dp)
             ) {
-                // Skip button - only on first pages
-                if (currentPage < pages.size - 1) {
-                    TextButton(onClick = onFinish) {
-                        Text("Skip")
-                    }
-                } else {
-                    // Empty spacer for alignment when skip button is not shown
-                    Spacer(modifier = Modifier.width(64.dp))
-                }
-
-                // Next or Get Started button
-                Button(
-                    onClick = {
-                        if (currentPage < pages.size - 1) {
-                            currentPage++
-                        } else {
-                            onFinish()
-                        }
-                    }
-                ) {
-                    Text(
-                        text = if (currentPage < pages.size - 1) "Next" else "Get Started",
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                Text(
+                    text = if (pagerState.currentPage < pages.lastIndex) "Next" else "Get Started",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                if (pagerState.currentPage < pages.lastIndex) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Next",
+                        tint = colorScheme.primary
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
+val pages = listOf(
+    InfoPage(
+        title = "Connect Instantly",
+        description = "Connect with friends nearby without internet. Send messages directly using Bluetooth technology.",
+        imageRes = R.drawable.icon
+    ),
+    InfoPage(
+        title = "Private & Secure",
+        description = "Your conversations stay between you and your friends. No servers, no data storage, just direct communication.",
+        imageRes = R.drawable.icon
+    ),
+    InfoPage(
+        title = "Save Battery & Data",
+        description = "Chat without draining your battery or using mobile data. Perfect for travel or areas with poor signal.",
+        imageRes = R.drawable.icon
+    )
+)
+
 @Composable
-private fun InfoPageContent(page: InfoPage) {
+fun OnboardingPage(
+    page: InfoPage,
+    modifier: Modifier = Modifier
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize()
     ) {
-        // Icon in a colored circle
-        Box(
+        Image(
+            painter = painterResource(id = page.imageRes),
+            contentDescription = null,
             modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = rememberVectorPainter(image = page.icon),
-                contentDescription = page.title,
-                modifier = Modifier.size(64.dp),
-                alpha = 0.9f
-            )
-        }
+                .size(220.dp)
+                .padding(16.dp)
+        )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // Title
         Text(
             text = page.title,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary
+            ),
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Description
         Text(
             text = page.description,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-            modifier = Modifier.padding(horizontal = 24.dp)
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                lineHeight = 24.sp
+            ),
+            textAlign = TextAlign.Center
         )
     }
 }
 
-// Simple data class for info page content
-data class InfoPage(
-    val title: String,
-    val description: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-)
+fun Modifier.alpha(alpha: Float) = this.graphicsLayer(alpha = alpha)
 
+@Composable
+fun clickable(onClick: () -> Unit) = Modifier.pointerInput(Unit) {
+    detectTapGestures(onTap = { onClick() })
+}

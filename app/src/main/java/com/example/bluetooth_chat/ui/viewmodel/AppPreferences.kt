@@ -12,7 +12,7 @@ object AppPreferences {
 
     // Keys for different preferences
     private const val KEY_FIRST_LAUNCH = "is_first_launch"
-
+    
     /**
      * Get the SharedPreferences instance
      */
