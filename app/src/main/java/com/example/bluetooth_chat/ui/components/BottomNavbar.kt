@@ -32,6 +32,7 @@ fun BottomNavbar(navController: NavController) {
 
     NavigationBar(
         modifier = Modifier
+            .height(92.dp)
             .shadow(
                 8.dp,
                 ambientColor = Color.Black,
