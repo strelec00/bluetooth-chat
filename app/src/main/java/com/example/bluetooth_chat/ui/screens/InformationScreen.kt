@@ -1,6 +1,5 @@
 package com.example.bluetooth_chat.ui.screens
 
-import android.R.style.Theme
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -8,22 +7,18 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bluetooth_chat.R
 import com.example.bluetooth_chat.ui.data.InfoPage
+import com.example.bluetooth_chat.ui.theme.DarkGrey
+import com.example.bluetooth_chat.ui.theme.LightGrey
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,11 +44,11 @@ fun InfoScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(LightGrey)
     ) {
         // Decorative wave (optional, transparent overlay)
         Image(
-            painter = painterResource(id = R.drawable.wave2),
+            painter = painterResource(id = R.drawable.wave4),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
@@ -76,7 +73,7 @@ fun InfoScreen(
                     text = "BlueChat",
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
-                        color = colorScheme.onPrimary
+                        color = Color.White
                     ),
                     modifier = Modifier.align(Alignment.Center)
                 )
@@ -84,7 +81,7 @@ fun InfoScreen(
                 Text(
                     text = "Skip",
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = colorScheme.onPrimary.copy(alpha = 0.8f)
+                        color = Color.White.copy(alpha = 0.8f)
                     ),
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -124,9 +121,9 @@ fun InfoScreen(
                             .clip(CircleShape)
                             .background(
                                 if (pagerState.currentPage == index)
-                                    colorScheme.onPrimary
+                                    Color.White
                                 else
-                                    colorScheme.onPrimary.copy(alpha = 0.5f)
+                                    Color.White.copy(alpha = 0.5f)
                             )
                     )
                 }
@@ -147,8 +144,8 @@ fun InfoScreen(
                 },
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorScheme.onPrimary,
-                    contentColor = colorScheme.primary
+                    containerColor = Color.White,
+                    contentColor = DarkGrey
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -159,14 +156,6 @@ fun InfoScreen(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                if (pagerState.currentPage < pages.lastIndex) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "Next",
-                        tint = colorScheme.primary
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -178,17 +167,17 @@ val pages = listOf(
     InfoPage(
         title = "Connect Instantly",
         description = "Connect with friends nearby without internet. Send messages directly using Bluetooth technology.",
-        imageRes = R.drawable.icon
+        imageRes = R.drawable.message_white
     ),
     InfoPage(
         title = "Private & Secure",
         description = "Your conversations stay between you and your friends. No servers, no data storage, just direct communication.",
-        imageRes = R.drawable.icon
+        imageRes = R.drawable.incognito_white
     ),
     InfoPage(
         title = "Save Battery & Data",
         description = "Chat without draining your battery or using mobile data. Perfect for travel or areas with poor signal.",
-        imageRes = R.drawable.icon
+        imageRes = R.drawable.battery_white
     )
 )
 
@@ -218,7 +207,7 @@ fun OnboardingPage(
             text = page.title,
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = Color.White
             ),
             textAlign = TextAlign.Center
         )
@@ -228,7 +217,7 @@ fun OnboardingPage(
         Text(
             text = page.description,
             style = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                color = Color.White.copy(alpha = 0.9f),
                 lineHeight = 24.sp
             ),
             textAlign = TextAlign.Center
@@ -238,7 +227,3 @@ fun OnboardingPage(
 
 fun Modifier.alpha(alpha: Float) = this.graphicsLayer(alpha = alpha)
 
-@Composable
-fun clickable(onClick: () -> Unit) = Modifier.pointerInput(Unit) {
-    detectTapGestures(onTap = { onClick() })
-}
