@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.bluetooth_chat.R
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.example.bluetooth_chat.ui.components.NavbarBack
 import com.example.bluetooth_chat.ui.viewmodel.ProfileViewModel
 
@@ -31,6 +32,12 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
     val profileImageUri = viewModel.profileImageUri.value
+    val isSystemDark = isSystemInDarkTheme()
+
+    // Postavi početnu dark mode vrijednost samo jednom
+    LaunchedEffect(Unit) {
+        viewModel.setInitialDarkMode(isSystemDark)
+    }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -52,7 +59,6 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Profile Picture
             if (profileImageUri != null) {
                 Image(
                     painter = rememberAsyncImagePainter(profileImageUri),
@@ -79,7 +85,6 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Username
             Text(
                 text = viewModel.username.value,
                 fontSize = 24.sp,
@@ -87,29 +92,28 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            // About
             Text(
-                text = viewModel.about.value,
+                text = viewModel.status.value,
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Editable fields
             ProfileFieldRow(
                 label = "Username",
                 initialValue = viewModel.username.value
             ) { newValue ->
-                viewModel.username.value = newValue
-            }
-            ProfileFieldRow(label = "About", initialValue = viewModel.about.value) { newValue ->
-                viewModel.about.value = newValue
+                viewModel.updateUsername(newValue)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            ProfileFieldRow(
+                label = "Status",
+                initialValue = viewModel.status.value
+            ) { newValue ->
+                viewModel.updateStatus(newValue)
+            }
 
-            // Dark mode toggle
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,7 +127,7 @@ fun ProfileScreen(
                 )
                 Switch(
                     checked = viewModel.isDarkMode.value,
-                    onCheckedChange = { viewModel.isDarkMode.value = it }
+                    onCheckedChange = { viewModel.updateDarkMode(it) }
                 )
             }
         }

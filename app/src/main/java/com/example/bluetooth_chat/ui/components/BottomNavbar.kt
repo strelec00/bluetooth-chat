@@ -1,5 +1,6 @@
 package com.example.bluetooth_chat.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -30,11 +31,13 @@ fun BottomNavbar(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        modifier = Modifier.shadow(
-            8.dp,
-            ambientColor = Color.Black,
-            spotColor = Color.Black
-        ), // Adds shadow for elevation
+        modifier = Modifier
+            .height(92.dp)
+            .shadow(
+                8.dp,
+                ambientColor = Color.Black,
+                spotColor = Color.Black
+            ),
         tonalElevation = 0.dp,
         containerColor = MaterialTheme.colorScheme.tertiary // Uses theme color for background
     ) {
