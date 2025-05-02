@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.bluetooth_chat.R
-import androidx.compose.foundation.isSystemInDarkTheme
 import com.example.bluetooth_chat.ui.components.NavbarBack
 import com.example.bluetooth_chat.ui.viewmodel.ProfileViewModel
 
@@ -30,11 +30,9 @@ fun ProfileScreen(
     onBack: () -> Unit,
     viewModel: ProfileViewModel = viewModel()
 ) {
-    val context = LocalContext.current
     val profileImageUri = viewModel.profileImageUri.value
     val isSystemDark = isSystemInDarkTheme()
 
-    // Postavi početnu dark mode vrijednost samo jednom
     LaunchedEffect(Unit) {
         viewModel.setInitialDarkMode(isSystemDark)
     }
@@ -42,7 +40,7 @@ fun ProfileScreen(
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        viewModel.profileImageUri.value = uri
+        viewModel.updateProfileImage(uri)
     }
 
     Scaffold(
@@ -59,29 +57,19 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            if (profileImageUri != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(profileImageUri),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            imagePickerLauncher.launch("image/*")
-                        }
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.profile4),
-                    contentDescription = "Default Profile Picture",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            imagePickerLauncher.launch("image/*")
-                        }
-                )
-            }
+            Image(
+                painter = if (profileImageUri != null)
+                    rememberAsyncImagePainter(profileImageUri)
+                else
+                    painterResource(id = R.drawable.profile4),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        imagePickerLauncher.launch("image/*")
+                    }
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 

@@ -11,6 +11,7 @@ class UserPreferences(context: Context) {
         private const val KEY_USERNAME = "username"
         private const val KEY_STATUS = "status"
         private const val KEY_DARK_MODE = "dark_mode"
+        private const val KEY_PROFILE_IMAGE_URI = "profile_image_uri"
     }
 
     var username: String
@@ -28,4 +29,8 @@ class UserPreferences(context: Context) {
     fun isDarkModeSet(): Boolean {
         return prefs.contains(KEY_DARK_MODE)
     }
+
+    var profileImageUri: String?
+        get() = prefs.getString(KEY_PROFILE_IMAGE_URI, null)
+        set(value) = prefs.edit().putString(KEY_PROFILE_IMAGE_URI, value).apply()
 }
