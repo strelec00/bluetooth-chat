@@ -1,6 +1,8 @@
 package com.example.bluetooth_chat.bluetooth
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
@@ -20,8 +22,9 @@ class BluetoothConnectionService(private val context: Context) {
     private var input: InputStream? = null
     private var output: OutputStream? = null
 
-    private val uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
+    @SuppressLint("MissingPermission")
     fun connectToDevice(
         device: BluetoothDevice,
         onConnected: () -> Unit,
@@ -30,16 +33,16 @@ class BluetoothConnectionService(private val context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
-                    Log.e("BluetoothService", "Missing BLUETOOTH_CONNECT permission")
-                    onError("Missing Bluetooth permission")
+                    onError("Missing BLUETOOTH_CONNECT permission")
                     return@launch
                 }
 
-                socket = device.createRfcommSocketToServiceRecord(uuid)
-                socket?.connect()
+                val sock = device.createRfcommSocketToServiceRecord(uuid)
+                sock.connect()
 
-                input = socket?.inputStream
-                output = socket?.outputStream
+                socket = sock
+                input = sock.inputStream
+                output = sock.outputStream
 
                 Log.d("BluetoothService", "Connected to ${device.name}")
                 onConnected()
@@ -61,15 +64,15 @@ class BluetoothConnectionService(private val context: Context) {
         }
     }
 
-    fun receive(onData: (ByteArray) -> Unit) {
+    fun receive(callback: (ByteArray) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val buffer = ByteArray(1024)
             try {
                 while (true) {
-                    val bytes = input?.read(buffer) ?: break
-                    if (bytes > 0) {
-                        val data = buffer.copyOf(bytes)
-                        onData(data)
+                    val bytesRead = input?.read(buffer) ?: break
+                    if (bytesRead > 0) {
+                        val received = buffer.copyOf(bytesRead)
+                        callback(received)
                     }
                 }
             } catch (e: Exception) {
@@ -79,9 +82,21 @@ class BluetoothConnectionService(private val context: Context) {
     }
 
     fun close() {
-        input?.close()
-        output?.close()
-        socket?.close()
+        try {
+            input?.close()
+            output?.close()
+            socket?.close()
+            Log.d("BluetoothService", "Connection closed")
+        } catch (e: Exception) {
+            Log.e("BluetoothService", "Close failed", e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getPairedDevices(): Set<BluetoothDevice> {
+        if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) return emptySet()
+        val adapter = BluetoothAdapter.getDefaultAdapter()
+        return adapter?.bondedDevices ?: emptySet()
     }
 
     private fun hasPermission(permission: String): Boolean {
