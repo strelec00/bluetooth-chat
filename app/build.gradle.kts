@@ -49,7 +49,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.activity.compose.v182) // za launcher
+    implementation("androidx.core:core:1.12.0")
+    implementation(libs.coil.compose) // za prikaz slika
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

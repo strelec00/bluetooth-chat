@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom splash screen dark theme -->
+    <style name="App.Starting.Theme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFFF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/bluetooth_white_padding</item>
+        <item name="postSplashScreenTheme">@style/Theme.BluetoothChat</item>
+    </style>
+</resources>
