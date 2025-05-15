@@ -18,6 +18,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
+import com.example.bluetooth_chat.ChatInboxScreen
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.remember
+
+
+
 
 data class User(val name: String, val profilePicRes: Int)
 
@@ -25,6 +33,7 @@ data class User(val name: String, val profilePicRes: Int)
 @Composable
 fun ChatScreen(modifier: Modifier = Modifier) {
     var searchQuery by remember { mutableStateOf("") } // Holds the current search query
+    var selectedUser by remember { mutableStateOf<User?>(null) } // Holds the currently selected user
 
     // Dummy list of users with names and profile picture resources
     val dummyUsers = listOf(
@@ -56,66 +65,74 @@ fun ChatScreen(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Search text field for filtering users
-        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it }, // Update the search query
-                label = { Text("Search people") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp), // Adds padding below the text field
-                singleLine = true, // Ensures the text field is a single line
-                colors = OutlinedTextFieldDefaults.colors( // Custom colors for the text field
-                    cursorColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        }
-
-        // Lazy column to display the filtered list of users
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(filteredUsers) { user -> // Iterate over filtered users
-                Surface(
+        if (selectedUser == null) {
+            // Search text field for filtering users
+            CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it }, // Update the search query
+                    label = { Text("Search people") },
                     modifier = Modifier
-                        .fillMaxWidth() // Take up full width of screen
-                        .height(64.dp) // Fixed height for each item
-                        .clickable { /* handle user click */ }, // Add a clickable action for each item
-                    shape = MaterialTheme.shapes.medium, // Rounded corners for the item
-                    tonalElevation = 2.dp, // Elevation for shadow effect
-                    color = MaterialTheme.colorScheme.surfaceVariant // Background color for each item
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically, // Center contents vertically
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp), // Adds padding below the text field
+                    singleLine = true, // Ensures the text field is a single line
+                    colors = OutlinedTextFieldDefaults.colors( // Custom colors for the text field
+                        cursorColor = MaterialTheme.colorScheme.onPrimary,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+
+            // Lazy column to display the filtered list of users
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(filteredUsers) { user -> // Iterate over filtered users
+                    Surface(
                         modifier = Modifier
-                            .fillMaxSize() // Take up full size of the row
-                            .padding(horizontal = 16.dp) // Horizontal padding for content inside the row
+                            .fillMaxWidth() // Take up full width of screen
+                            .height(64.dp) // Fixed height for each item
+                            .clickable {
+                                selectedUser = user // Set the selected user when clicked
+                            },
+                        shape = MaterialTheme.shapes.medium, // Rounded corners for the item
+                        tonalElevation = 2.dp, // Elevation for shadow effect
+                        color = MaterialTheme.colorScheme.surfaceVariant // Background color for each item
                     ) {
-                        // Profile picture of the user (circular shape)
-                        Image(
-                            painter = painterResource(id = user.profilePicRes),
-                            contentDescription = "Profile Picture",
-                            contentScale = ContentScale.Crop, // Crop image to fit inside the circle
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically, // Center contents vertically
                             modifier = Modifier
-                                .size(40.dp) // Set image size
-                                .clip(CircleShape) // Clip image into a circular shape
-                                .padding(end = 0.dp)
-                        )
-                        // User's name displayed next to the profile picture
-                        Text(
-                            text = user.name,
-                            style = MaterialTheme.typography.titleMedium, // Text style for name
-                            color = MaterialTheme.colorScheme.onSurface, // Text color
-                            modifier = Modifier.padding(start = 8.dp) // Add space between image and text
-                        )
+                                .fillMaxSize() // Take up full size of the row
+                                .padding(horizontal = 16.dp) // Horizontal padding for content inside the row
+                        ) {
+                            // Profile picture of the user (circular shape)
+                            Image(
+                                painter = painterResource(id = user.profilePicRes),
+                                contentDescription = "Profile Picture",
+                                contentScale = ContentScale.Crop, // Crop image to fit inside the circle
+                                modifier = Modifier
+                                    .size(40.dp) // Set image size
+                                    .clip(CircleShape) // Clip image into a circular shape
+                                    .padding(end = 0.dp)
+                            )
+                            // User's name displayed next to the profile picture
+                            Text(
+                                text = user.name,
+                                style = MaterialTheme.typography.titleMedium, // Text style for name
+                                color = MaterialTheme.colorScheme.onSurface, // Text color
+                                modifier = Modifier.padding(start = 8.dp) // Add space between image and text
+                            )
+                        }
                     }
                 }
             }
+        } else {
+            // When a user is selected, show the ChatInboxScreen
+            ChatInboxScreen()
         }
     }
 }
+
