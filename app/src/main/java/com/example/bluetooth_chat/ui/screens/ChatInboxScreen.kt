@@ -1,5 +1,6 @@
 package com.example.bluetooth_chat.ui.screens
 
+import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -129,7 +130,7 @@ fun ChatInboxScreen(
                     text = userName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -154,7 +155,7 @@ fun ChatInboxScreen(
 
 @Composable
 fun MessageBubbleStyled(message: Message) {
-    val bubbleColor = if (message.isSentByUser) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onPrimary
+    val bubbleColor = if (message.isSentByUser) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onBackground
     val arrangement = if (message.isSentByUser) Arrangement.End else Arrangement.Start
 
     Row(
@@ -182,11 +183,11 @@ fun MessageBubbleStyled(message: Message) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = message.sender, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(text = message.timestamp, fontSize = 12.sp, color = Color.Gray)
+                Text(text = message.sender, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary)
+                Text(text = message.timestamp, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = message.text, fontSize = 14.sp, color = Color.White)
+            Text(text = message.text, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
         }
 
         if (message.isSentByUser) {
