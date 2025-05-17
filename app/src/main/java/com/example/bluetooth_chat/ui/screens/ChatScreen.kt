@@ -1,3 +1,4 @@
+
 package com.example.bluetooth_chat.ui.screens
 
 import androidx.compose.foundation.Image
@@ -17,25 +18,28 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.runtime.Composable
-import com.example.bluetooth_chat.ChatInboxScreen
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.runtime.remember
+import androidx.navigation.NavHostController
 
-
-
+// Data class for user
 
 data class User(val name: String, val profilePicRes: Int)
 
-// Screen to list users message history
+/**
+ * ChatScreen lists users. When a user is selected it shows ChatInboxScreen inline,
+ * and notifies parent via onDetailOpen whether detail view is active.
+ */
 @Composable
-fun ChatScreen(modifier: Modifier = Modifier) {
-    var searchQuery by remember { mutableStateOf("") } // Holds the current search query
-    var selectedUser by remember { mutableStateOf<User?>(null) } // Holds the currently selected user
+fun ChatScreen(
+    modifier: Modifier = Modifier,
+    onDetailOpen: (Boolean) -> Unit,
+    navController: NavHostController
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedUser by remember { mutableStateOf<User?>(null) }
 
-    // Dummy list of users with names and profile picture resources
+    // Dummy users list
     val dummyUsers = listOf(
         User("Alice Johnson", R.drawable.profile1),
         User("Bob Smith", R.drawable.profile2),
@@ -44,39 +48,39 @@ fun ChatScreen(modifier: Modifier = Modifier) {
         User("Michael Smith", R.drawable.profile5),
         User("Frank", R.drawable.profile1),
         User("Jerry", R.drawable.profile2),
-        User("Steven Seagull", R.drawable.profile3),
+        User("Steven Seagull", R.drawable.profile3)
     )
 
-    // Filter users based on search query
+    // Filter logic
     val filteredUsers = remember(searchQuery) {
         if (searchQuery.isBlank()) dummyUsers
         else dummyUsers.filter { it.name.contains(searchQuery, ignoreCase = true) }
     }
 
-    // Custom text selection colors for text field
     val customTextSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.onPrimary,
         backgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
     )
 
-    // Main content of the screen
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         if (selectedUser == null) {
-            // Search text field for filtering users
+            // notify parent that detail is closed
+            LaunchedEffect(Unit) { onDetailOpen(false) }
+
             CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
                 OutlinedTextField(
                     value = searchQuery,
-                    onValueChange = { searchQuery = it }, // Update the search query
+                    onValueChange = { searchQuery = it },
                     label = { Text("Search people") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp), // Adds padding below the text field
-                    singleLine = true, // Ensures the text field is a single line
-                    colors = OutlinedTextFieldDefaults.colors( // Custom colors for the text field
+                        .padding(bottom = 16.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
                         cursorColor = MaterialTheme.colorScheme.onPrimary,
                         unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                         disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -88,51 +92,55 @@ fun ChatScreen(modifier: Modifier = Modifier) {
                 )
             }
 
-            // Lazy column to display the filtered list of users
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(filteredUsers) { user -> // Iterate over filtered users
+                items(filteredUsers) { user ->
                     Surface(
                         modifier = Modifier
-                            .fillMaxWidth() // Take up full width of screen
-                            .height(64.dp) // Fixed height for each item
+                            .fillMaxWidth()
+                            .height(64.dp)
                             .clickable {
-                                selectedUser = user // Set the selected user when clicked
+                                selectedUser = user
                             },
-                        shape = MaterialTheme.shapes.medium, // Rounded corners for the item
-                        tonalElevation = 2.dp, // Elevation for shadow effect
-                        color = MaterialTheme.colorScheme.surfaceVariant // Background color for each item
+                        shape = MaterialTheme.shapes.medium,
+                        tonalElevation = 2.dp,
+                        color = MaterialTheme.colorScheme.surfaceVariant
                     ) {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically, // Center contents vertically
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .fillMaxSize() // Take up full size of the row
-                                .padding(horizontal = 16.dp) // Horizontal padding for content inside the row
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp)
                         ) {
-                            // Profile picture of the user (circular shape)
                             Image(
                                 painter = painterResource(id = user.profilePicRes),
                                 contentDescription = "Profile Picture",
-                                contentScale = ContentScale.Crop, // Crop image to fit inside the circle
+                                contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .size(40.dp) // Set image size
-                                    .clip(CircleShape) // Clip image into a circular shape
-                                    .padding(end = 0.dp)
+                                    .size(40.dp)
+                                    .clip(CircleShape)
                             )
-                            // User's name displayed next to the profile picture
                             Text(
                                 text = user.name,
-                                style = MaterialTheme.typography.titleMedium, // Text style for name
-                                color = MaterialTheme.colorScheme.onSurface, // Text color
-                                modifier = Modifier.padding(start = 8.dp) // Add space between image and text
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(start = 8.dp)
                             )
                         }
                     }
                 }
             }
         } else {
-            // When a user is selected, show the ChatInboxScreen
-            ChatInboxScreen()
+            // notify parent detail is open
+            LaunchedEffect(selectedUser) { onDetailOpen(true) }
+
+            // Show inbox for selected user
+            ChatInboxScreen(
+                userName = selectedUser!!.name,
+                onBack = {
+                    selectedUser = null
+                    onDetailOpen(false)
+                }
+            )
         }
     }
 }
-
