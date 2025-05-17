@@ -152,12 +152,9 @@ fun ChatInboxScreen(
     }
 }
 
-/**
- * Composable to display a message bubble with distinct colors for sent vs. received.
- */
 @Composable
 fun MessageBubbleStyled(message: Message) {
-    val bubbleColor = if (message.isSentByUser) Color(0xFFA2D2F8) else Color(0xFFF5F5F5)
+    val bubbleColor = if (message.isSentByUser) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onPrimary
     val arrangement = if (message.isSentByUser) Arrangement.End else Arrangement.Start
 
     Row(
@@ -189,7 +186,7 @@ fun MessageBubbleStyled(message: Message) {
                 Text(text = message.timestamp, fontSize = 12.sp, color = Color.Gray)
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = message.text, fontSize = 14.sp)
+            Text(text = message.text, fontSize = 14.sp, color = Color.White)
         }
 
         if (message.isSentByUser) {
@@ -204,13 +201,3 @@ fun MessageBubbleStyled(message: Message) {
     }
 }
 
-/**
- * Preview function for displaying the chat inbox screen during development.
- */
-@Preview(showBackground = true)
-@Composable
-fun ChatScreenPreview() {
-    BluetoothchatTheme {
-        ChatInboxScreen(userName = "Preview User", onBack = {})
-    }
-}

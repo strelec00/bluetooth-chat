@@ -102,22 +102,7 @@ fun ProfileScreen(
                 viewModel.updateStatus(newValue)
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Dark mode",
-                    modifier = Modifier.weight(1f),
-                    fontSize = 16.sp
-                )
-                Switch(
-                    checked = viewModel.isDarkMode.value,
-                    onCheckedChange = { viewModel.updateDarkMode(it) }
-                )
-            }
+
         }
     }
 }
