@@ -12,16 +12,26 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.*
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.bluetooth_chat.bluetooth.BluetoothChecker
-import com.example.bluetooth_chat.ui.components.*
+import com.example.bluetooth_chat.ui.components.BottomNavbar
+import com.example.bluetooth_chat.ui.components.Navbar
 import com.example.bluetooth_chat.ui.navigation.Screen
-import com.example.bluetooth_chat.ui.screens.*
+import com.example.bluetooth_chat.ui.screens.EnableBluetoothScreen
+import com.example.bluetooth_chat.ui.screens.GroupsScreen
+import com.example.bluetooth_chat.ui.screens.HomeScreen
+import com.example.bluetooth_chat.ui.screens.ProfileScreen
+import com.example.bluetooth_chat.ui.screens.ChatScreen
+import com.example.bluetooth_chat.ui.screens.InfoScreen
+import com.example.bluetooth_chat.ui.screens.BluetoothDevicesScreen
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 import com.example.bluetooth_chat.util.AppPreferences
 
@@ -46,34 +56,30 @@ class MainActivity : ComponentActivity() {
             requestBluetoothPermissionIfNeeded()
         }
 
-        // Information Screen testing
         AppPreferences.resetFirstLaunch(applicationContext)
 
         setContent {
             val context = applicationContext
             var showInfoScreen by remember { mutableStateOf(AppPreferences.isFirstLaunch(context)) }
+            val navController = rememberNavController()
+            var isDetailOpen by remember { mutableStateOf(false) }
+            val currentDestination by navController.currentBackStackEntryAsState()
+
+            val showBars = !isDetailOpen && when (currentDestination?.destination?.route) {
+                Screen.Home.route,
+                Screen.Chat.route,
+                Screen.Groups.route,
+                Screen.BluetoothDevices.route -> true
+                else -> false
+            }
 
             BluetoothchatTheme {
                 if (showInfoScreen) {
-                    InfoScreen(
-                        onFinish = {
-                            AppPreferences.setFirstLaunchComplete(context)
-                            showInfoScreen = false
-                        }
-                    )
+                    InfoScreen(onFinish = {
+                        AppPreferences.setFirstLaunchComplete(context)
+                        showInfoScreen = false
+                    })
                 } else {
-                    val navController = rememberNavController()
-                    val currentDestination by navController.currentBackStackEntryAsState()
-
-                    val showBars = when (currentDestination?.destination?.route) {
-                        Screen.Home.route,
-                        Screen.Chat.route,
-                        Screen.Groups.route,
-                        Screen.BluetoothDevices.route -> true
-
-                        else -> false
-                    }
-
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         topBar = {
@@ -96,12 +102,27 @@ class MainActivity : ComponentActivity() {
                                     startDestination = Screen.Home.route,
                                     modifier = Modifier.padding(innerPadding)
                                 ) {
-                                    composable(Screen.Home.route) { HomeScreen(name = "BluetoothChat") }
-                                    composable(Screen.Chat.route) { ChatScreen() }
-                                    composable(Screen.Groups.route) { GroupsScreen() }
-                                    composable(Screen.BluetoothDevices.route) { BluetoothDevicesScreen() }
+                                    composable(Screen.Home.route) {
+                                        HomeScreen(name = "BluetoothChat")
+                                        isDetailOpen = false
+                                    }
+                                    composable(Screen.Chat.route) {
+                                        ChatScreen(
+                                            navController = navController,
+                                            onDetailOpen = { isDetailOpen = it }
+                                        )
+                                    }
+                                    composable(Screen.Groups.route) {
+                                        GroupsScreen()
+                                        isDetailOpen = false
+                                    }
+                                    composable(Screen.BluetoothDevices.route) {
+                                        BluetoothDevicesScreen()
+                                        isDetailOpen = false
+                                    }
                                     composable(Screen.Profile.route) {
                                         ProfileScreen(onBack = { navController.popBackStack() })
+                                        isDetailOpen = false
                                     }
                                 }
                             },
@@ -111,12 +132,27 @@ class MainActivity : ComponentActivity() {
                                     startDestination = Screen.Home.route,
                                     modifier = Modifier.padding(innerPadding)
                                 ) {
-                                    composable(Screen.Home.route) { EnableBluetoothScreen() }
-                                    composable(Screen.Chat.route) { ChatScreen() }
-                                    composable(Screen.Groups.route) { GroupsScreen() }
-                                    composable(Screen.BluetoothDevices.route) { EnableBluetoothScreen() }
+                                    composable(Screen.Home.route) {
+                                        EnableBluetoothScreen()
+                                        isDetailOpen = false
+                                    }
+                                    composable(Screen.Chat.route) {
+                                        ChatScreen(
+                                            navController = navController,
+                                            onDetailOpen = { isDetailOpen = it }
+                                        )
+                                    }
+                                    composable(Screen.Groups.route) {
+                                        GroupsScreen()
+                                        isDetailOpen = false
+                                    }
+                                    composable(Screen.BluetoothDevices.route) {
+                                        EnableBluetoothScreen()
+                                        isDetailOpen = false
+                                    }
                                     composable(Screen.Profile.route) {
                                         ProfileScreen(onBack = { navController.popBackStack() })
+                                        isDetailOpen = false
                                     }
                                 }
                             }
