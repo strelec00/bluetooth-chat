@@ -21,6 +21,8 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.OutlinedTextField
 import androidx.navigation.NavHostController
+import com.plcoding.bluetoothchat.domain.chat.BluetoothDevice
+import com.plcoding.bluetoothchat.presentation.BluetoothUiState
 
 // Data class for user
 
@@ -34,7 +36,8 @@ data class User(val name: String, val profilePicRes: Int)
 fun ChatScreen(
     modifier: Modifier = Modifier,
     onDetailOpen: (Boolean) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    onStartServer: () -> Unit,
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedUser by remember { mutableStateOf<User?>(null) }
@@ -92,6 +95,10 @@ fun ChatScreen(
                 )
             }
 
+            Button(onClick = onStartServer){
+                Text(text = "Start server")
+            }
+
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(filteredUsers) { user ->
                     Surface(
@@ -134,13 +141,7 @@ fun ChatScreen(
             LaunchedEffect(selectedUser) { onDetailOpen(true) }
 
             // Show inbox for selected user
-            ChatInboxScreen(
-                userName = selectedUser!!.name,
-                onBack = {
-                    selectedUser = null
-                    onDetailOpen(false)
-                }
-            )
+
         }
     }
 }

@@ -1,22 +1,25 @@
 package com.example.bluetooth_chat
 
 import android.Manifest
-import android.content.pm.PackageManager
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,26 +37,52 @@ import com.example.bluetooth_chat.ui.screens.InfoScreen
 import com.example.bluetooth_chat.ui.screens.BluetoothDevicesScreen
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
 import com.example.bluetooth_chat.util.AppPreferences
+import com.plcoding.bluetoothchat.presentation.BluetoothViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.bluetooth_chat.ui.screens.ChatInboxScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private val bluetoothManager by lazy {
+        applicationContext.getSystemService(BluetoothManager::class.java)
+    }
+    private val bluetoothAdapter by lazy {
+        bluetoothManager?.adapter
+    }
+
+    private val isBluetoothEnabled: Boolean
+        get() = bluetoothAdapter?.isEnabled == true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
-        enableEdgeToEdge()
 
-        requestPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (!isGranted) {
-                Toast.makeText(this, "Bluetooth permission is required", Toast.LENGTH_SHORT).show()
+        val enableBluetoothLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { /* Not needed */ }
+
+        val permissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { perms ->
+            val canEnableBluetooth = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                perms[Manifest.permission.BLUETOOTH_CONNECT] == true
+            } else true
+
+            if(canEnableBluetooth && !isBluetoothEnabled) {
+                enableBluetoothLauncher.launch(
+                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                )
             }
         }
 
-        if (!hasBluetoothConnectPermission()) {
-            requestBluetoothPermissionIfNeeded()
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                )
+            )
         }
 
         AppPreferences.resetFirstLaunch(applicationContext)
@@ -64,6 +93,8 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             var isDetailOpen by remember { mutableStateOf(false) }
             val currentDestination by navController.currentBackStackEntryAsState()
+            val viewModel = hiltViewModel<BluetoothViewModel>()
+            val state by viewModel.state.collectAsState()
 
             val showBars = !isDetailOpen && when (currentDestination?.destination?.route) {
                 Screen.Home.route,
@@ -74,6 +105,26 @@ class MainActivity : ComponentActivity() {
             }
 
             BluetoothchatTheme {
+                LaunchedEffect(key1 = state.errorMessage) {
+                    state.errorMessage?.let { message ->
+                        Toast.makeText(
+                            applicationContext,
+                            message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+                LaunchedEffect(key1 = state.isConnected) {
+                    if(state.isConnected) {
+                        Toast.makeText(
+                            applicationContext,
+                            "You're connected!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
                 if (showInfoScreen) {
                     InfoScreen(onFinish = {
                         AppPreferences.setFirstLaunchComplete(context)
@@ -109,7 +160,8 @@ class MainActivity : ComponentActivity() {
                                     composable(Screen.Chat.route) {
                                         ChatScreen(
                                             navController = navController,
-                                            onDetailOpen = { isDetailOpen = it }
+                                            onDetailOpen = { isDetailOpen = it },
+                                            onStartServer = viewModel::waitForIncomingConnections
                                         )
                                     }
                                     composable(Screen.Groups.route) {
@@ -117,9 +169,40 @@ class MainActivity : ComponentActivity() {
                                         isDetailOpen = false
                                     }
                                     composable(Screen.BluetoothDevices.route) {
-                                        BluetoothDevicesScreen()
                                         isDetailOpen = false
+
+                                        when {
+                                            state.isConnecting -> {
+                                                Column(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
+                                                    CircularProgressIndicator()
+                                                    Text(text = "Connecting...")
+                                                }
+                                            }
+
+                                            state.isConnected -> {
+                                                ChatInboxScreen(
+                                                    state = state,
+                                                    onDisconnect = viewModel::disconnectFromDevice,
+                                                    onSendMessage = viewModel::sendMessage
+                                                )
+                                            }
+
+                                            else -> {
+                                                BluetoothDevicesScreen(
+                                                    state = state,
+                                                    onStartScan = viewModel::startScan,
+                                                    onStopScan = viewModel::stopScan,
+                                                    onDeviceClick = viewModel::connectToDevice,
+                                                    onStartServer = viewModel::waitForIncomingConnections
+                                                )
+                                            }
+                                        }
                                     }
+
                                     composable(Screen.Profile.route) {
                                         ProfileScreen(onBack = { navController.popBackStack() })
                                         isDetailOpen = false
@@ -139,7 +222,8 @@ class MainActivity : ComponentActivity() {
                                     composable(Screen.Chat.route) {
                                         ChatScreen(
                                             navController = navController,
-                                            onDetailOpen = { isDetailOpen = it }
+                                            onDetailOpen = { isDetailOpen = it },
+                                            onStartServer = viewModel::waitForIncomingConnections
                                         )
                                     }
                                     composable(Screen.Groups.route) {
@@ -160,23 +244,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-    }
-
-    private fun hasBluetoothConnectPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-    }
-
-    private fun requestBluetoothPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
         }
     }
 }
