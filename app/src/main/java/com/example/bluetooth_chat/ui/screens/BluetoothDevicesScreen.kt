@@ -205,7 +205,7 @@ fun BluetoothDeviceList(
                     modifier = Modifier.padding(12.dp)
                 )
             }
-            items(pairedDevices) { device ->
+            items(scannedDevices) { device ->
                 Text(
                     text = device.name ?: "(No name)",
                     modifier = Modifier

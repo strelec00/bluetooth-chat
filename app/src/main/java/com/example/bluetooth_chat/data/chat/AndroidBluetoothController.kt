@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
+import android.location.LocationManager
 import com.plcoding.bluetoothchat.domain.chat.BluetoothMessage
 import com.plcoding.bluetoothchat.domain.chat.ConnectionResult
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +59,7 @@ class AndroidBluetoothController(
         get() = _errors.asSharedFlow()
 
     private val foundDeviceReceiver = FoundDeviceReceiver { device ->
+        Log.d("AndroidBluetoothController", "here from found device receiver ")
         _scannedDevices.update { devices ->
             val newDevice = device.toBluetoothDeviceDomain()
             Log.d("AndroidBluetoothController", "Discovered device: ${newDevice.name}")
@@ -70,7 +72,7 @@ class AndroidBluetoothController(
             _isConnected.update { isConnected }
         } else {
             CoroutineScope(Dispatchers.IO).launch {
-                _errors.emit("Can't connect to a non-paired device.")
+                // _errors.emit("Can't connect to a non-paired device.")
             }
         }
     }
@@ -91,22 +93,25 @@ class AndroidBluetoothController(
     }
 
     override fun startDiscovery() {
+        Log.d("AndroidBluetoothController", "startDiscovery called")
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !hasPermission(Manifest.permission.BLUETOOTH_SCAN)) {
             return
         }
-        Log.d("AndroidBluetoothController", "Here")
 
         context.registerReceiver(
             foundDeviceReceiver,
             IntentFilter(BluetoothDevice.ACTION_FOUND)
         )
+        Log.d("AndroidBluetoothController", "Registered FoundDeviceReceiver")
 
         updatePairedDevices()
 
         if (bluetoothAdapter?.isDiscovering == false) {
-            bluetoothAdapter?.startDiscovery()
+            val started = bluetoothAdapter?.startDiscovery()
+            Log.d("AndroidBluetoothController", "Discovery started: $started")
         }
+        Log.d("AndroidBluetoothController", "bluetoothAdapter: $bluetoothAdapter")
 
     }
 
@@ -116,7 +121,7 @@ class AndroidBluetoothController(
             return
         }
 
-        Log.d("AndroidBluetoothController", "Here from stop")
+        Log.d("AndroidBluetoothController", "Discovery stopped")
 
         bluetoothAdapter?.cancelDiscovery()
     }
@@ -233,6 +238,7 @@ class AndroidBluetoothController(
     }
 
     private fun updatePairedDevices() {
+        Log.d("AndroidBluetoothController", "here from update")
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
             Log.d("AndroidBluetoothController", "Missing BLUETOOTH_CONNECT permission, can't get paired devices.")
