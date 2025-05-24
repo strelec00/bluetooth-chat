@@ -69,6 +69,7 @@ fun ChatScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
+
     ) {
         if (selectedUser == null) {
             // notify parent that detail is closed
@@ -95,9 +96,34 @@ fun ChatScreen(
                 )
             }
 
-            Button(onClick = onStartServer){
-                Text(text = "Start server")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            )
+            {
+                Button(
+                    onClick = onStartServer,
+                    modifier = Modifier
+                        .height(44.dp)
+                        .widthIn(min = 150.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+                ) {
+                    Text(
+                        text = "Start server",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
+
+
+
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(filteredUsers) { user ->

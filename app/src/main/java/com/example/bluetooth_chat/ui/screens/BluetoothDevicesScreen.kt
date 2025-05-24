@@ -62,9 +62,7 @@ fun BluetoothDevicesScreen(
             }
         )
 
-        Button(onClick = onStartServer){
-            Text(text = "Start server")
-        }
+
 
         BluetoothDeviceList(
             pairedDevices = state.pairedDevices,
