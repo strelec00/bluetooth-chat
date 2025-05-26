@@ -21,6 +21,8 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.OutlinedTextField
 import androidx.navigation.NavHostController
+import com.plcoding.bluetoothchat.domain.chat.BluetoothDevice
+import com.plcoding.bluetoothchat.presentation.BluetoothUiState
 
 // Data class for user
 
@@ -34,7 +36,8 @@ data class User(val name: String, val profilePicRes: Int)
 fun ChatScreen(
     modifier: Modifier = Modifier,
     onDetailOpen: (Boolean) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    onStartServer: () -> Unit,
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedUser by remember { mutableStateOf<User?>(null) }
@@ -66,6 +69,7 @@ fun ChatScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
+
     ) {
         if (selectedUser == null) {
             // notify parent that detail is closed
@@ -91,6 +95,35 @@ fun ChatScreen(
                     )
                 )
             }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            )
+            {
+                Button(
+                    onClick = onStartServer,
+                    modifier = Modifier
+                        .height(44.dp)
+                        .widthIn(min = 150.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+                ) {
+                    Text(
+                        text = "Start server",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+
+
+
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(filteredUsers) { user ->
@@ -134,13 +167,7 @@ fun ChatScreen(
             LaunchedEffect(selectedUser) { onDetailOpen(true) }
 
             // Show inbox for selected user
-            ChatInboxScreen(
-                userName = selectedUser!!.name,
-                onBack = {
-                    selectedUser = null
-                    onDetailOpen(false)
-                }
-            )
+
         }
     }
 }
