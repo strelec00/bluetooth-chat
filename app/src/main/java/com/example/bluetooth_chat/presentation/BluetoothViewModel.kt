@@ -1,8 +1,8 @@
-package com.plcoding.bluetoothchat.presentation
+package com.example.bluetooth_chat.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.plcoding.bluetoothchat.domain.chat.BluetoothController
+import com.example.bluetooth_chat.domain.chat.BluetoothController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
-import com.plcoding.bluetoothchat.domain.chat.BluetoothDeviceDomain
-import com.plcoding.bluetoothchat.domain.chat.ConnectionResult
+import com.example.bluetooth_chat.domain.chat.BluetoothDeviceDomain
+import com.example.bluetooth_chat.domain.chat.ConnectionResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
+import com.example.bluetooth_chat.domain.chat.BluetoothMessage
 
 
 @HiltViewModel
@@ -75,6 +75,19 @@ class BluetoothViewModel @Inject constructor(
     fun sendMessage(message: String) {
         viewModelScope.launch {
             val bluetoothMessage = bluetoothController.trySendMessage(message)
+            if(bluetoothMessage != null) {
+                _state.update { it.copy(
+                    messages = it.messages + bluetoothMessage
+                ) }
+            }
+        }
+    }
+
+    fun sendFile(fileName: String, base64: String) {
+        viewModelScope.launch {
+            // Compose the header as handled in the MessageMapper
+            val messageStr = "FILE:$fileName:$base64"
+            val bluetoothMessage = bluetoothController.trySendMessage(messageStr)
             if(bluetoothMessage != null) {
                 _state.update { it.copy(
                     messages = it.messages + bluetoothMessage
