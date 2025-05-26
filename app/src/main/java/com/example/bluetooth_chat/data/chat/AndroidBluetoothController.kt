@@ -1,4 +1,4 @@
-package com.plcoding.bluetoothchat.data.chat
+package com.example.bluetooth_chat.data.chat
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -9,8 +9,8 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import com.plcoding.bluetoothchat.domain.chat.BluetoothController
-import com.plcoding.bluetoothchat.domain.chat.BluetoothDeviceDomain
+import com.example.bluetooth_chat.domain.chat.BluetoothController
+import com.example.bluetooth_chat.domain.chat.BluetoothDeviceDomain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,9 +18,8 @@ import kotlinx.coroutines.flow.update
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
-import android.location.LocationManager
-import com.plcoding.bluetoothchat.domain.chat.BluetoothMessage
-import com.plcoding.bluetoothchat.domain.chat.ConnectionResult
+import com.example.bluetooth_chat.domain.chat.BluetoothMessage
+import com.example.bluetooth_chat.domain.chat.ConnectionResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
