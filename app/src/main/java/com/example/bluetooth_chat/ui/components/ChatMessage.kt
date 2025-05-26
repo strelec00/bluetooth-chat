@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.plcoding.bluetoothchat.domain.chat.BluetoothMessage
+import com.example.bluetooth_chat.domain.chat.BluetoothMessage
 
 @Composable
 fun ChatMessage(

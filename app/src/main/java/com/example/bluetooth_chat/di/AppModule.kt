@@ -1,8 +1,8 @@
-package com.plcoding.bluetoothchat.di
+package com.example.bluetooth_chat.di
 
 import android.content.Context
-import com.plcoding.bluetoothchat.data.chat.AndroidBluetoothController
-import com.plcoding.bluetoothchat.domain.chat.BluetoothController
+import com.example.bluetooth_chat.data.chat.AndroidBluetoothController
+import com.example.bluetooth_chat.domain.chat.BluetoothController
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

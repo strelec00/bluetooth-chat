@@ -1,9 +1,8 @@
-package com.plcoding.bluetoothchat.data.chat
+package com.example.bluetooth_chat.data.chat
 
 import android.bluetooth.BluetoothSocket
-import com.plcoding.bluetoothchat.domain.chat.BluetoothMessage
-import com.plcoding.bluetoothchat.domain.chat.ConnectionResult
-import com.plcoding.bluetoothchat.domain.chat.TransferFailedException
+import com.example.bluetooth_chat.domain.chat.BluetoothMessage
+import com.example.bluetooth_chat.domain.chat.TransferFailedException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,7 +18,7 @@ class BluetoothDataTransferService(
             if(!socket.isConnected) {
                 return@flow
             }
-            val buffer = ByteArray(1024)
+            val buffer = ByteArray(4096) // Increase buffer for larger file transfers
             while(true) {
                 val byteCount = try {
                     socket.inputStream.read(buffer)
