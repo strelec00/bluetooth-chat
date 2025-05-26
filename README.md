@@ -21,7 +21,7 @@ Android app for real-time messaging between devices using Bluetooth, requiring n
 1. Clone the repository:
    
    ```bash
-   git clone https://github.com/your-username/bluetooth-chat.git
+   git clone https://github.com/strelec00/bluetooth-chat.git
 
 2. Open Android Studio:
    - Select **"Open an existing project"**.
