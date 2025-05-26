@@ -1,4 +1,3 @@
-
 package com.example.bluetooth_chat.ui.screens
 
 import androidx.compose.foundation.Image
@@ -21,8 +20,6 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.OutlinedTextField
 import androidx.navigation.NavHostController
-import com.plcoding.bluetoothchat.domain.chat.BluetoothDevice
-import com.plcoding.bluetoothchat.presentation.BluetoothUiState
 
 // Data class for user
 
