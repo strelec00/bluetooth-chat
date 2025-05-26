@@ -1,4 +1,4 @@
-package com.plcoding.bluetoothchat
+package com.example.bluetooth_chat
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
