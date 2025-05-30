@@ -36,8 +36,8 @@ import com.example.bluetooth_chat.ui.screens.ChatScreen
 import com.example.bluetooth_chat.ui.screens.InfoScreen
 import com.example.bluetooth_chat.ui.screens.BluetoothDevicesScreen
 import com.example.bluetooth_chat.ui.theme.BluetoothchatTheme
-import com.example.bluetooth_chat.util.AppPreferences
-import com.plcoding.bluetoothchat.presentation.BluetoothViewModel
+import com.example.bluetooth_chat.ui.viewmodel.AppPreferences
+import com.example.bluetooth_chat.presentation.BluetoothViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bluetooth_chat.ui.screens.ChatInboxScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -187,7 +187,8 @@ class MainActivity : ComponentActivity() {
                                                 ChatInboxScreen(
                                                     state = state,
                                                     onDisconnect = viewModel::disconnectFromDevice,
-                                                    onSendMessage = viewModel::sendMessage
+                                                    onSendMessage = viewModel::sendMessage,
+                                                    onSendFile = { fileName, base64 -> viewModel.sendFile(fileName, base64) }
                                                 )
                                             }
 
