@@ -226,6 +226,17 @@ class AndroidBluetoothController(
         return bluetoothMessage // UI gets plaintext
     }
 
+    override suspend fun trySendBluetoothMessage(message: BluetoothMessage): BluetoothMessage? {
+        if (dataTransferService == null) return null
+        val serialized = message.toTransferString()
+        val encrypted = AesCipher.encrypt(serialized)
+        dataTransferService?.sendMessage(encrypted.toByteArray())
+        return message
+    }
+
+    override fun getLocalDeviceName(): String {
+        return bluetoothAdapter?.name ?: "Unknown name"
+    }
 
     override fun closeConnection() {
         currentClientSocket?.close()
