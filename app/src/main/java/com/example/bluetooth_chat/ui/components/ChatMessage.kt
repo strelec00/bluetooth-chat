@@ -3,6 +3,7 @@ package com.example.bluetooth_chat.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,11 +53,47 @@ fun ChatMessage(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Message text styled like the first file
-        Text(
-            text = message.message,
-            fontSize = 14.sp,
-            color = messageTextColor
-        )
+        if (message.isFile && message.fileName != null) {
+            // File message bubble
+            Text(
+                text = "File: ${message.fileName}",
+                fontSize = 14.sp,
+                color = messageTextColor
+            )
+            if (message.fileSize != null) {
+                Text(
+                    text = "Size: ${formatFileSize(message.fileSize)}",
+                    fontSize = 12.sp,
+                    color = messageTextColor
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    // TODO: Implement file save/open
+                    // Decode message.message (Base64) and save/open as file with message.fileName
+                }
+            ) {
+                Text("Download")
+            }
+        } else {
+            // Regular text message
+            Text(
+                text = message.message,
+                fontSize = 14.sp,
+                color = messageTextColor
+            )
+        }
+    }
+}
+
+// Helper to format file size
+fun formatFileSize(size: Long): String {
+    val kb = size / 1024
+    val mb = kb / 1024
+    return when {
+        mb > 0 -> "$mb MB"
+        kb > 0 -> "$kb KB"
+        else -> "$size B"
     }
 }

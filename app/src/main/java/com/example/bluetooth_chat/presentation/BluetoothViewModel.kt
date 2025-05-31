@@ -16,7 +16,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import com.example.bluetooth_chat.domain.chat.BluetoothMessage
 
-
 @HiltViewModel
 class BluetoothViewModel @Inject constructor(
     private val bluetoothController: BluetoothController
@@ -85,13 +84,17 @@ class BluetoothViewModel @Inject constructor(
 
     fun sendFile(fileName: String, base64: String) {
         viewModelScope.launch {
-            // Compose the header as handled in the MessageMapper
-            val messageStr = "FILE:$fileName:$base64"
-            val bluetoothMessage = bluetoothController.trySendMessage(messageStr)
-            if(bluetoothMessage != null) {
-                _state.update { it.copy(
-                    messages = it.messages + bluetoothMessage
-                ) }
+            val bluetoothMessage = BluetoothMessage(
+                message = base64,
+                senderName = bluetoothController.getLocalDeviceName(),
+                isFromLocalUser = true,
+                isFile = true,
+                fileName = fileName,
+                fileSize = base64.length.toLong()
+            )
+            val sentMessage = bluetoothController.trySendBluetoothMessage(bluetoothMessage)
+            if (sentMessage != null) {
+                _state.update { it.copy(messages = it.messages + sentMessage) }
             }
         }
     }
@@ -150,6 +153,4 @@ class BluetoothViewModel @Inject constructor(
         super.onCleared()
         bluetoothController.release()
     }
-
-
 }
