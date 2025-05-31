@@ -203,31 +203,30 @@ class AndroidBluetoothController(
     }
 
     override suspend fun trySendMessage(message: String): BluetoothMessage? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
             return null
         }
-        if (dataTransferService == null) {
+
+        if(dataTransferService == null) {
             return null
         }
 
-        // Create the BluetoothMessage with plaintext for the UI
         val bluetoothMessage = BluetoothMessage(
-            message = message, // PLAINTEXT for UI
+            message = message,
             senderName = bluetoothAdapter?.name ?: "Unknown name",
             isFromLocalUser = true
         )
 
-        // Encrypt only for transfer
-        val serialized = bluetoothMessage.toTransferString() // see below
+        val serialized = bluetoothMessage.toTransferString()
         val encrypted = AesCipher.encrypt(serialized)
         dataTransferService?.sendMessage(encrypted.toByteArray())
 
-        return bluetoothMessage // UI gets plaintext
+        return bluetoothMessage
     }
 
     override suspend fun trySendBluetoothMessage(message: BluetoothMessage): BluetoothMessage? {
-        if (dataTransferService == null) return null
+        if(dataTransferService == null) return null
         val serialized = message.toTransferString()
         val encrypted = AesCipher.encrypt(serialized)
         dataTransferService?.sendMessage(encrypted.toByteArray())

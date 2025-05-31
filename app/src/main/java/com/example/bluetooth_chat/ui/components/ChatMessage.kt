@@ -18,13 +18,17 @@ fun ChatMessage(
     message: BluetoothMessage,
     modifier: Modifier = Modifier
 ) {
+    // Bubble background color matching first file's style
     val bubbleColor = if (message.isFromLocalUser)
         MaterialTheme.colorScheme.onTertiary
     else
         MaterialTheme.colorScheme.onBackground
 
+    // Text colors to match first file (primary for message text, secondary for sender)
     val senderTextColor = MaterialTheme.colorScheme.secondary
     val messageTextColor = MaterialTheme.colorScheme.primary
+
+    // Alignment based on sender can be handled in the parent LazyColumn or here by applying padding/margin
 
     Column(
         modifier = modifier
@@ -32,7 +36,7 @@ fun ChatMessage(
             .padding(12.dp)
             .widthIn(max = 300.dp)
     ) {
-        // Sender name
+        // Sender name styled like the first file
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -43,6 +47,8 @@ fun ChatMessage(
                 fontSize = 14.sp,
                 color = senderTextColor
             )
+            // If you have a timestamp in BluetoothMessage, add it here, e.g.:
+            // Text(text = message.timestamp, fontSize = 12.sp, color = senderTextColor)
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -82,8 +88,7 @@ fun ChatMessage(
 }
 
 // Helper to format file size
-fun formatFileSize(size: Long?): String {
-    if (size == null) return ""
+fun formatFileSize(size: Long): String {
     val kb = size / 1024
     val mb = kb / 1024
     return when {
