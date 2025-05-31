@@ -86,12 +86,17 @@ class BluetoothViewModel @Inject constructor(
     fun sendFile(fileName: String, base64: String) {
         viewModelScope.launch {
             // Compose the header as handled in the MessageMapper
-            val messageStr = "FILE:$fileName:$base64"
-            val bluetoothMessage = bluetoothController.trySendMessage(messageStr)
-            if(bluetoothMessage != null) {
-                _state.update { it.copy(
-                    messages = it.messages + bluetoothMessage
-                ) }
+            val bluetoothMessage = BluetoothMessage(
+                message = base64,
+                senderName = bluetoothController.getLocalDeviceName(), // or similar
+                isFromLocalUser = true,
+                isFile = true,
+                fileName = fileName,
+                fileSize = base64.length.toLong() // or actual file size in bytes if you have it
+            )
+            val sentMessage = bluetoothController.trySendBluetoothMessage(bluetoothMessage)
+            if (sentMessage != null) {
+                _state.update { it.copy(messages = it.messages + sentMessage) }
             }
         }
     }
