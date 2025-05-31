@@ -211,16 +211,19 @@ class AndroidBluetoothController(
             return null
         }
 
-        // Encrypt the message before sending
-        val encryptedMessage = AesCipher.encrypt(message)
-
+        // Create the BluetoothMessage with plaintext for the UI
         val bluetoothMessage = BluetoothMessage(
-            message = encryptedMessage,
+            message = message, // PLAINTEXT for UI
             senderName = bluetoothAdapter?.name ?: "Unknown name",
             isFromLocalUser = true
         )
-        dataTransferService?.sendMessage(bluetoothMessage.toByteArray())
-        return bluetoothMessage
+
+        // Encrypt only for transfer
+        val serialized = bluetoothMessage.toTransferString() // see below
+        val encrypted = AesCipher.encrypt(serialized)
+        dataTransferService?.sendMessage(encrypted.toByteArray())
+
+        return bluetoothMessage // UI gets plaintext
     }
 
 
