@@ -1,4 +1,4 @@
-package com.example.bluetooth_chat.util
+package com.example.bluetooth_chat.ui.viewmodel
 
 import android.content.Context
 import android.content.SharedPreferences
