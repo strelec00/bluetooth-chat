@@ -58,6 +58,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        actionBar?.hide() // hides the defalut bar at the top
+
         val enableBluetoothLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { /* Not needed */ }
