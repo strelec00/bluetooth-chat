@@ -1,4 +1,4 @@
-package com.plcoding.bluetoothchat.domain.chat
+package com.example.bluetooth_chat.domain.chat
 
 data class BluetoothMessage(
     val message: String,
@@ -8,4 +8,3 @@ data class BluetoothMessage(
     val fileName: String? = null,
     val fileSize: Long? = null
 )
-
