@@ -20,6 +20,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Daj izvršne dozvole za gradlew
+        run: chmod +x gradlew
+
       - name: Pokreni ktlintFormat
         run: ./gradlew ktlintFormat
 
