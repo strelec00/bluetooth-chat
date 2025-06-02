@@ -1,7 +1,11 @@
 package com.example.bluetooth_chat.presentation
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import android.content.Context
+import android.util.Base64
+import java.io.File
+import java.io.FileOutputStream
 import com.example.bluetooth_chat.domain.chat.BluetoothController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +19,15 @@ import com.example.bluetooth_chat.domain.chat.ConnectionResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import com.example.bluetooth_chat.domain.chat.BluetoothMessage
+import android.app.Application
 
 
 @HiltViewModel
 class BluetoothViewModel @Inject constructor(
-    private val bluetoothController: BluetoothController
-) : ViewModel() {
+    private val bluetoothController: BluetoothController,
+    application: Application
+) : AndroidViewModel(application) {
+
 
     private val _state = MutableStateFlow(BluetoothUiState())
     val state = combine(
@@ -128,8 +135,13 @@ class BluetoothViewModel @Inject constructor(
                     ) }
                 }
                 is ConnectionResult.TransferSucceeded -> {
+                    val msg = result.message
+                    val updatedMsg = if (msg.isFile) {
+                        // Save the file and set localFilePath
+                        saveReceivedFile(getApplication<Application>().applicationContext, msg)
+                    } else msg
                     _state.update { it.copy(
-                        messages = it.messages + result.message
+                        messages = it.messages + updatedMsg
                     ) }
                 }
                 is ConnectionResult.Error -> {
@@ -140,21 +152,35 @@ class BluetoothViewModel @Inject constructor(
                     ) }
                 }
             }
+        }.catch { throwable ->
+            bluetoothController.closeConnection()
+            _state.update { it.copy(
+                isConnected = false,
+                isConnecting = false,
+            ) }
+        }.launchIn(viewModelScope)
+    }
+
+
+    /**
+     * Save received file to storage and return the message with the local file path.
+     */
+    private fun saveReceivedFile(context: Context, message: BluetoothMessage): BluetoothMessage {
+        if (!message.isFile || message.fileName == null) return message
+        return try {
+            val fileBytes = Base64.decode(message.message, Base64.DEFAULT)
+            val dir = File(context.getExternalFilesDir(null), "ReceivedFiles")
+            dir.mkdirs()
+            val file = File(dir, message.fileName)
+            FileOutputStream(file).use { it.write(fileBytes) }
+            message.copy(localFilePath = file.absolutePath)
+        } catch (e: Exception) {
+            message // If saving fails, return the message as-is
         }
-            .catch { throwable ->
-                bluetoothController.closeConnection()
-                _state.update { it.copy(
-                    isConnected = false,
-                    isConnecting = false,
-                ) }
-            }
-            .launchIn(viewModelScope)
     }
 
     override fun onCleared() {
         super.onCleared()
         bluetoothController.release()
     }
-
-
 }

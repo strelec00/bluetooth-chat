@@ -1,5 +1,6 @@
 package com.example.bluetooth_chat.ui.components
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,36 +9,36 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bluetooth_chat.domain.chat.BluetoothMessage
+import java.io.File
+import androidx.core.content.FileProvider
+import android.webkit.MimeTypeMap
 
 @Composable
 fun ChatMessage(
     message: BluetoothMessage,
     modifier: Modifier = Modifier
 ) {
-
-    // Bubble background color matching first file's style
     val bubbleColor = if (message.isFromLocalUser)
         MaterialTheme.colorScheme.onTertiary
     else
         MaterialTheme.colorScheme.onBackground
 
-    // Text colors to match first file (primary for message text, secondary for sender)
     val senderTextColor = MaterialTheme.colorScheme.secondary
     val messageTextColor = MaterialTheme.colorScheme.primary
 
-    // Alignment based on sender can be handled in the parent LazyColumn or here by applying padding/margin
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .background(color = bubbleColor, shape = RoundedCornerShape(12.dp))
             .padding(12.dp)
             .widthIn(max = 300.dp)
     ) {
-      
-        // Sender name styled like the first file
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -48,16 +49,11 @@ fun ChatMessage(
                 fontSize = 14.sp,
                 color = senderTextColor
             )
-
-            // If you have a timestamp in BluetoothMessage, add it here, e.g.:
-            // Text(text = message.timestamp, fontSize = 12.sp, color = senderTextColor)
-
         }
 
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         if (message.isFile && message.fileName != null) {
-            // File message bubble
             Text(
                 text = "File: ${message.fileName}",
                 fontSize = 14.sp,
@@ -73,14 +69,29 @@ fun ChatMessage(
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    // TODO: Implement file save/open
-                    // Decode message.message (Base64) and save/open as file with message.fileName
-                }
+                    message.localFilePath?.let { filePath ->
+                        val file = File(filePath)
+                        val fileUri = FileProvider.getUriForFile(
+                            context,
+                            context.packageName + ".provider",
+                            file
+                        )
+                        val mimeType = getMimeType(file)
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(fileUri, mimeType)
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        try {
+                            context.startActivity(Intent.createChooser(intent, "Open file"))
+                        } catch (e: Exception) {
+                            // Optionally show a Toast: "No app found to open this file"
+                        }
+                    }
+                },
+                enabled = message.localFilePath != null
             ) {
-                Text("Download")
+                Text("Open File")
             }
         } else {
-            // Regular text message
             Text(
                 text = message.message,
                 fontSize = 14.sp,
@@ -90,7 +101,13 @@ fun ChatMessage(
     }
 }
 
-// Helper to format file size
+fun getMimeType(file: File): String {
+    val extension = file.extension.lowercase()
+    return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+        ?: "application/octet-stream"
+}
+
+
 fun formatFileSize(size: Long?): String {
     if (size == null) return ""
     val kb = size / 1024

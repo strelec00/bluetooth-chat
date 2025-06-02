@@ -6,5 +6,6 @@ data class BluetoothMessage(
     val isFromLocalUser: Boolean,
     val isFile: Boolean = false,
     val fileName: String? = null,
-    val fileSize: Long? = null
+    val fileSize: Long? = null,
+    val localFilePath: String? = null
 )
