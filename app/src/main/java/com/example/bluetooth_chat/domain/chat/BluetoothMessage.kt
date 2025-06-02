@@ -1,5 +1,9 @@
 package com.example.bluetooth_chat.domain.chat
 
+
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BluetoothMessage(
     val message: String,
     val senderName: String,
