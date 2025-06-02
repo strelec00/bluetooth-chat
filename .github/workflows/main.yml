@@ -1,10 +1,11 @@
 name: Markdown Checker
-
 on:
   pull_request:
     paths:
       - '**.md'
-
+  push:
+    paths:
+      - '**.md'
 jobs:
   markdown-lint:
     runs-on: ubuntu-latest
