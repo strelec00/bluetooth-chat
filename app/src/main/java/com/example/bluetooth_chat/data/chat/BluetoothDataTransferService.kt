@@ -15,21 +15,32 @@ class BluetoothDataTransferService(
 ) {
     fun listenForIncomingMessages(): Flow<BluetoothMessage> {
         return flow {
-            if(!socket.isConnected) {
+            if (!socket.isConnected) {
                 return@flow
             }
+
             val buffer = ByteArray(4096) // Increase buffer for larger file transfers
-            while(true) {
+
+            while (true) {
                 val byteCount = try {
                     socket.inputStream.read(buffer)
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     throw TransferFailedException()
                 }
 
+                // Read the encrypted message as a string
+                val encryptedMessage = buffer.decodeToString(endIndex = byteCount)
+
+                // Decrypt the message before mapping to BluetoothMessage
+                val decryptedMessage = try {
+                    AesCipher.decrypt(encryptedMessage)
+                } catch (e: Exception) {
+                    // If decryption fails, fallback to the raw message
+                    encryptedMessage
+                }
+
                 emit(
-                    buffer.decodeToString(
-                        endIndex = byteCount
-                    ).toBluetoothMessage(
+                    decryptedMessage.toBluetoothMessage(
                         isFromLocalUser = false
                     )
                 )

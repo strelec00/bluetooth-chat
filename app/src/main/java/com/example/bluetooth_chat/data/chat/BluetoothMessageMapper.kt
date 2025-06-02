@@ -3,22 +3,23 @@ package com.example.bluetooth_chat.data.chat
 import com.example.bluetooth_chat.domain.chat.BluetoothMessage
 
 fun String.toBluetoothMessage(isFromLocalUser: Boolean): BluetoothMessage {
-    // File message: "FILE:<filename>:<base64>"
+    // File message: "FILE:<senderName>:<fileName>:<base64>"
     if (startsWith("FILE:")) {
-        val firstColon = indexOf(':', startIndex = 5)
-        if (firstColon > 5) {
-            val fileName = substring(5, firstColon)
-            val base64 = substring(firstColon + 1)
+        val parts = split(":", limit = 4)
+        if (parts.size == 4) {
+            val senderName = parts[1]
+            val fileName = parts[2]
+            val base64 = parts[3]
             return BluetoothMessage(
                 message = base64,
-                senderName = "", // You can include sender info if you want
+                senderName = senderName,
                 isFromLocalUser = isFromLocalUser,
                 isFile = true,
                 fileName = fileName
             )
         }
     }
-    // Regular message: "sender#message"
+    // Regular message: "senderName#message"
     val name = substringBeforeLast("#")
     val message = substringAfter("#")
     return BluetoothMessage(
@@ -30,9 +31,18 @@ fun String.toBluetoothMessage(isFromLocalUser: Boolean): BluetoothMessage {
 
 fun BluetoothMessage.toByteArray(): ByteArray {
     return if (isFile && fileName != null) {
-        // Send as "FILE:<filename>:<base64>"
-        "FILE:$fileName:$message".encodeToByteArray()
+        // Include sender name: "FILE:<senderName>:<fileName>:<base64>"
+        "FILE:$senderName:$fileName:$message".encodeToByteArray()
     } else {
+        // "senderName#message"
         "$senderName#$message".encodeToByteArray()
+    }
+}
+
+fun BluetoothMessage.toTransferString(): String {
+    return if (isFile && fileName != null) {
+        "FILE:$senderName:$fileName:$message"
+    } else {
+        "$senderName#$message"
     }
 }

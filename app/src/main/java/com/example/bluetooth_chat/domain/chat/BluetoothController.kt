@@ -18,6 +18,10 @@ interface BluetoothController {
 
     suspend fun trySendMessage(message: String): BluetoothMessage?
 
+    suspend fun trySendBluetoothMessage(message: BluetoothMessage): BluetoothMessage?
+
+    fun getLocalDeviceName(): String
+
     fun closeConnection()
     fun release()
 }
