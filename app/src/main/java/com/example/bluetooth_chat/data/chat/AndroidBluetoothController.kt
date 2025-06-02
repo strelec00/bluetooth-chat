@@ -203,6 +203,7 @@ class AndroidBluetoothController(
     }
 
     override suspend fun trySendMessage(message: String): BluetoothMessage? {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
             return null
