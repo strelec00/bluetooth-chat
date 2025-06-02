@@ -19,5 +19,4 @@ object AppModule {
     fun provideBluetoothController(@ApplicationContext context: Context): BluetoothController {
         return AndroidBluetoothController(context)
     }
-
 }

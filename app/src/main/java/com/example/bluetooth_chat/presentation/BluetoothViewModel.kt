@@ -15,14 +15,11 @@ import com.example.bluetooth_chat.domain.chat.ConnectionResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import com.example.bluetooth_chat.domain.chat.BluetoothMessage
-import com.example.bluetooth_chat.data.chat.SimpleMessageStorage
-
 
 
 @HiltViewModel
 class BluetoothViewModel @Inject constructor(
-    private val bluetoothController: BluetoothController,
-    private val messageStorage: SimpleMessageStorage
+    private val bluetoothController: BluetoothController
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BluetoothUiState())
@@ -79,20 +76,6 @@ class BluetoothViewModel @Inject constructor(
         viewModelScope.launch {
             val bluetoothMessage = bluetoothController.trySendMessage(message)
             if(bluetoothMessage != null) {
-                messageStorage.saveMessage(bluetoothMessage)
-                _state.update { it.copy(
-                    messages = it.messages + bluetoothMessage
-                ) }
-            }
-        }
-    }
-
-    fun sendFile(fileName: String, base64: String) {
-        viewModelScope.launch {
-            // Compose the header as handled in the MessageMapper
-            val messageStr = "FILE:$fileName:$base64"
-            val bluetoothMessage = bluetoothController.trySendMessage(messageStr)
-            if(bluetoothMessage != null) {
                 _state.update { it.copy(
                     messages = it.messages + bluetoothMessage
                 ) }
@@ -133,16 +116,13 @@ class BluetoothViewModel @Inject constructor(
         return onEach { result ->
             when(result) {
                 ConnectionResult.ConnectionEstablished -> {
-                    val history = messageStorage.loadMessages()
                     _state.update { it.copy(
                         isConnected = true,
                         isConnecting = false,
-                        errorMessage = null,
-                        messages = history
+                        errorMessage = null
                     ) }
                 }
                 is ConnectionResult.TransferSucceeded -> {
-                    messageStorage.saveMessage(result.message)
                     _state.update { it.copy(
                         messages = it.messages + result.message
                     ) }
