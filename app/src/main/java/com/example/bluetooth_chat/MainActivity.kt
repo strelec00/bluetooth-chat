@@ -41,6 +41,8 @@ import com.example.bluetooth_chat.presentation.BluetoothViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bluetooth_chat.ui.screens.ChatInboxScreen
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.bluetooth_chat.domain.chat.BluetoothDeviceDomain
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -186,11 +188,13 @@ class MainActivity : ComponentActivity() {
                                             }
 
                                             state.isConnected -> {
+                                                val connectedDevice = state.connectedDevice ?: return@composable
                                                 ChatInboxScreen(
                                                     state = state,
+                                                    device = connectedDevice,
                                                     onDisconnect = viewModel::disconnectFromDevice,
                                                     onSendMessage = viewModel::sendMessage,
-                                                    onSendFile = { fileName, base64 -> viewModel.sendFile(fileName, base64) }
+                                                    onSendFile = { device: BluetoothDeviceDomain, fileName, base64 -> viewModel.sendFile(device,fileName, base64) }
                                                 )
                                             }
 

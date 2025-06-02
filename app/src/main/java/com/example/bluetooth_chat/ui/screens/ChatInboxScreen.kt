@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import android.util.Base64
+import com.example.bluetooth_chat.domain.chat.BluetoothDeviceDomain
 import com.example.bluetooth_chat.presentation.BluetoothUiState
 import com.example.bluetooth_chat.ui.components.ChatMessage
 import java.util.*
@@ -36,9 +37,10 @@ import java.util.*
 @Composable
 fun ChatInboxScreen(
     state: BluetoothUiState,
+    device: BluetoothDeviceDomain,
     onDisconnect: () -> Unit,
     onSendMessage: (String) -> Unit,
-    onSendFile: (fileName: String, base64: String) -> Unit, // NEW
+    onSendFile: (device: BluetoothDeviceDomain, fileName: String, base64: String) -> Unit, // NEW
     onBack: () -> Unit = {}
 ) {
     val message = rememberSaveable { mutableStateOf("") }
@@ -54,7 +56,7 @@ fun ChatInboxScreen(
             inputStream?.close()
             if (fileBytes != null && fileName != null) {
                 val base64 = Base64.encodeToString(fileBytes, Base64.DEFAULT)
-                onSendFile(fileName, base64)
+                onSendFile(device , fileName, base64)
             }
         }
     }

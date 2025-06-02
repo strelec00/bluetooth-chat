@@ -96,7 +96,7 @@ class BluetoothViewModel @Inject constructor(
         }
     }
 
-    fun sendFile(fileName: String, base64: String) {
+    fun sendFile(device: BluetoothDeviceDomain,fileName: String, base64: String) {
         viewModelScope.launch {
             // Compose the header as handled in the MessageMapper
             val bluetoothMessage = BluetoothMessage(
