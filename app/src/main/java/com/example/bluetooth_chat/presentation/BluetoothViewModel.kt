@@ -19,7 +19,6 @@ import com.example.bluetooth_chat.data.chat.SimpleMessageStorage
 
 
 
-
 @HiltViewModel
 class BluetoothViewModel @Inject constructor(
     private val bluetoothController: BluetoothController,
@@ -81,6 +80,19 @@ class BluetoothViewModel @Inject constructor(
             val bluetoothMessage = bluetoothController.trySendMessage(message)
             if(bluetoothMessage != null) {
                 messageStorage.saveMessage(bluetoothMessage)
+                _state.update { it.copy(
+                    messages = it.messages + bluetoothMessage
+                ) }
+            }
+        }
+    }
+
+    fun sendFile(fileName: String, base64: String) {
+        viewModelScope.launch {
+            // Compose the header as handled in the MessageMapper
+            val messageStr = "FILE:$fileName:$base64"
+            val bluetoothMessage = bluetoothController.trySendMessage(messageStr)
+            if(bluetoothMessage != null) {
                 _state.update { it.copy(
                     messages = it.messages + bluetoothMessage
                 ) }

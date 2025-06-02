@@ -20,5 +20,4 @@ object AppModule {
         return AndroidBluetoothController(context)
     }
 
-
 }
