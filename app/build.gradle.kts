@@ -2,9 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     id("kotlin-kapt") // Required for Hilt
     id("com.google.dagger.hilt.android")
-    id("kotlinx-serialization")
+
 }
 
 android {
@@ -73,4 +74,5 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

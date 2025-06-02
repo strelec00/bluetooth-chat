@@ -20,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import com.example.bluetooth_chat.domain.chat.BluetoothMessage
 import android.app.Application
+import com.example.bluetooth_chat.data.chat.MessageStorage
 
 
 @HiltViewModel
@@ -45,6 +46,8 @@ class BluetoothViewModel @Inject constructor(
     private var deviceConnectionJob: Job? = null
 
     init {
+        val savedMessages = MessageStorage.loadMessages(getApplication())
+        _state.update { it.copy(messages = savedMessages) }
         bluetoothController.isConnected.onEach { isConnected ->
             _state.update { it.copy(isConnected = isConnected) }
         }.launchIn(viewModelScope)
@@ -83,9 +86,12 @@ class BluetoothViewModel @Inject constructor(
         viewModelScope.launch {
             val bluetoothMessage = bluetoothController.trySendMessage(message)
             if(bluetoothMessage != null) {
+
+
                 _state.update { it.copy(
                     messages = it.messages + bluetoothMessage
                 ) }
+                MessageStorage.saveMessages(getApplication(), _state.value.messages)
             }
         }
     }
@@ -98,7 +104,7 @@ class BluetoothViewModel @Inject constructor(
                 senderName = bluetoothController.getLocalDeviceName(), // or similar
                 isFromLocalUser = true,
                 isFile = true,
-                fileName = fileName,
+                fileName = "history_${device.address}.json",
                 fileSize = base64.length.toLong() // or actual file size in bytes if you have it
             )
             val sentMessage = bluetoothController.trySendBluetoothMessage(bluetoothMessage)
