@@ -1,39 +1,14 @@
-name: Kotlin format Auto-Fix
+name: Markdown Lint
 
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
+    paths:
+      - '**.md'
 
 jobs:
-  ktlint-fix:
+  markdown-lint:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout koda
-        uses: actions/checkout@v3
-
-      - name: Postavi JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Daj izvršne dozvole za gradlew
-        run: chmod +x gradlew
-
-      - name: Pokreni ktlintFormat
-        run: ./gradlew ktlintFormat
-
-      - name: Commit i push ako ima promjena
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A
-          if git diff --cached --quiet; then
-            echo "✅ Nema promjena za commit."
-          else
-            git commit -m "🔧 Automatski stil koda (kotlinFormat)"
-            git push
-          fi
+      - uses: actions/checkout@v3
+      - name: Pokreni Markdown linter
+        uses: avto-dev/markdown-lint@v1
