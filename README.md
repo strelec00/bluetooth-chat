@@ -13,13 +13,13 @@ Android app for real-time messaging between devices using Bluetooth, requiring n
 - Works without Wi-Fi or mobile data
 
 ## Tech Stack
+
 - Language: Java/Kotlin
 - Framework: Android SDK
 - Communication: Bluetooth API
 
 ## Installation (Android Studio)
 1. Clone the repository:
-   
    ```bash
    git clone https://github.com/strelec00/bluetooth-chat.git
 
