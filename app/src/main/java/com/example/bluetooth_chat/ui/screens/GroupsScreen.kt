@@ -18,6 +18,6 @@ fun GroupsScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "This is the GroupsScreen")
+        Text(text = "Coming soon...")
     }
 }
